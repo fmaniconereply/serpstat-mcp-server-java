@@ -34,8 +34,6 @@ public class SerpstatApiClient {
     private final Cache<String, Object> cache;
     private final RateLimiter rateLimiter;
 
-
-
     public SerpstatApiClient(String apiToken) {
         this.apiToken = apiToken;
         this.httpClient = HttpClient.newBuilder()
@@ -51,13 +49,26 @@ public class SerpstatApiClient {
     }
 
     /**
+     * Protected method to get API URL - allows overriding in tests
+     */
+    protected String getApiUrl() {
+        return SERPSTAT_API_URL;
+    }
+
+    /**
      * Универсальный метод для вызова любого Serpstat API метода
      */
     public SerpstatApiResponse callMethod(String method, Map<String, Object> params)
             throws SerpstatApiException {
 
-        // Проверяем кэш
-        final String cacheKey = method + ":" + params.toString();
+        // Handle null parameters - prevents NullPointerException in cache key generation
+        // In real scenarios, this defect would not be reproduced due to proper parameter validation
+        if (params == null) {
+            params = Map.of(); // Use empty map instead of null
+        }
+
+        // Check cache
+        final String cacheKey = method + ":" + params.toString(); // BUG: NPE here if params is null (without fix above)
         if (cache.getIfPresent(cacheKey) != null) {
             return new SerpstatApiResponse((JsonNode) cache.getIfPresent(cacheKey), method, params);
         }
@@ -73,7 +84,7 @@ public class SerpstatApiClient {
 
             // HTTP запрос
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(SERPSTAT_API_URL+"/?token="+apiToken))
+                    .uri(URI.create(getApiUrl() + "/?token=" + apiToken))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + apiToken)
                     .POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(requestBody)))
@@ -101,7 +112,6 @@ public class SerpstatApiClient {
             cache.put(cacheKey, apiResponse);
 
             return apiResponse;
-
 
         } catch (IOException | InterruptedException e) {
             throw new SerpstatApiException("Request failed: " + e.getMessage(), e);
