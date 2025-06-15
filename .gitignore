@@ -46,6 +46,9 @@ local.properties
 # Serpstat specific
 serpstat-api-token.txt
 
+# Test documentation
+src/test/docs/
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

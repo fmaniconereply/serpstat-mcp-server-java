@@ -11,11 +11,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.within;
 
 /**
- * Comprehensive Happy Path test coverage for SerpstatApiClient.
+ * Comprehensive Positive Path test coverage for SerpstatApiClient.
  * Tests successful API interactions with mocked HTTP responses.
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class SerpstatApiClientHappyPathTest {
+class SerpstatApiClientPositivePathTest {
 
     private static WireMockServer wireMockServer;
     private TestableSerpstatApiClient client;

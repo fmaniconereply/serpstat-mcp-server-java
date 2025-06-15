@@ -8,7 +8,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * Basic functional tests for SerpstatApiClient - Happy Path scenarios only
+ * Basic functional tests for SerpstatApiClient - Positive Path scenarios only
  * Tests core functionality without making real HTTP requests
  */
 @DisplayName("SerpstatApiClient Basic Tests")
