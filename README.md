@@ -2,7 +2,7 @@
 
 MCP \(Model Context Protocol\) server for integration with Serpstat API, implementing api methods for a SEO analysis.
 
-This is alpha release v0.0.1.
+This is alpha release v0.0.2.
 
 ## Requirements
 
@@ -62,9 +62,11 @@ This is alpha release v0.0.1.
    "mcpServers": {
       "serpstat": {
          "command": "java",
-         "args": ["-jar", "/path/to/jar/location/serpstat-mcp-server-java-0.0.1.jar"],
+         "args": ["-jar", "/path/to/jar/location/serpstat-mcp-server-java-0.0.2.jar"],
          "env": {
-            "SERPSTAT_API_TOKEN": "PLACE_API_TOKEN_HERE"
+            "SERPSTAT_API_TOKEN": "PLACE_API_TOKEN_HERE",
+            "LANG": "en_US.UTF-8",
+            "LC_ALL": "en_US.UTF-8"
          }
       }
    }
@@ -88,29 +90,47 @@ You can try prompts in your language!
 
 [#2 Example SEO Report Artifact for domain ringostat.com](https://claude.ai/public/artifacts/b3823232-4744-412e-beb3-8b80b40f63f7)
 
-## Included Tools (v.0.0.1) 
+## Included Tools (v.0.0.2) 
 
 ### `get_domains_info`
-Get comprehensive domain information using Serpstat API. Returns visibility, keywords count, estimated traffic, dynamics and PPC data for multiple domains.
+Get comprehensive domain information using Serpstat API. Returns visibility, keywords count, estimated traffic,
+dynamics, and PPC data for multiple domains.
 
 ### `domain_regions_count`
-Analyze domain keyword presence across all Google regional databases. Shows keyword count by country, regional performance comparison and international SEO insights. Start every complex domain analysis with this tool.
+Analyze domain keyword presence across all Google regional databases. Shows keyword count by country, regional
+performance comparison, and international SEO insights. Start every complex domain analysis with this tool.
 
 ### `domain_keywords`
-Get keywords that domain ranks for in Google search results. Includes position, traffic, difficulty analysis with comprehensive SEO insights and performance metrics.
+Get keywords that domain ranks for in Google search results. Includes position, traffic, difficulty analysis with
+comprehensive SEO insights and performance metrics.
 
 ### `get_domain_competitors`
 Get top 20 domain competitors from search results with SEO metrics, traffic, visibility, and relevance score.
 
 ### `get_backlinks_summary`
-Get a comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types, quality metrics and recent changes for domain or subdomain.
+Get a comprehensive backlinks summary using Serpstat API. Returns referring domains, backlinks count, link types,
+quality metrics, and recent changes for domain or subdomain.
 
 ### `api_stats`
-Get current API usage statistics and credit limits. Shows remaining credits, usage percentage, and provides recommendations for optimal usage.
+Get current API usage statistics and credit limits. Shows remaining credits, usage percentage, and provides
+recommendations for optimal usage.
 
 ### `projects_list`
-Get a list of user projects with details like project ID, name, domain, creation date and user role. Useful for project management and getting project IDs for other API calls. Does not consume API credits.",
+Get a list of user projects with details like project ID, name, domain, creation date, and user role. Useful for project management and getting project IDs for other API calls. Does not consume API credits.",
 
+### `get_keywords` 🆕
+Research related keywords and get search volume, CPC, competition data. Shows organic keywords associated with the seed
+keyword that domains rank for in Google's top-100 results. Includes volume, cost per click, difficulty, and SERP
+features analysis. Costs 1 API credit per keyword returned.
+
+### `keyword_competitors` 🆕
+Analyze domains competing for a specific keyword in Google search results. Returns top-20 competitors with comprehensive
+SEO metrics including visibility scores, traffic estimates, relevance analysis, and market dynamics. Provides intelligent
+competition level assessment (LOW/MEDIUM/HIGH/VERY_HIGH), identifies advertising competition patterns, analyzes market
+trends based on competitor dynamics, and categorizes competitors by performance tiers. Supports advanced filtering by
+domain lists, traffic ranges, visibility thresholds, and relevance scores. Each competitor costs 1 API credit with a
+minimum charge of 1 credit per request (even for empty results). Essential for competitive analysis, keyword difficulty
+assessment, and market opportunity identification.
 
 ## Logging
 
@@ -156,7 +176,7 @@ Alternatively, you can email them at [support@serpstat.com](mailto:support@serps
 
 MIT License
 
-- This thing is under MIT license, which means you can copy, use, modify and even sell any part of this code without any hassle. 
+- This thing is under MIT license, which means you can copy, use, modify, and even sell any part of this code without any hassle. 
 - Want to grab a chunk for your project? Go for it. 
 - Want to rewrite half of it and ship a commercial product? Be my guest. 
 - The only thing you need to do is not delete the copyright and the license itself from the files you take, and remember the Serpstat team with a kind word when you get that paycheck.

@@ -26,7 +26,7 @@ public class CompetitorsResponseFormatter {
         String requestedDomain = (String) arguments.get("domain");
         String searchEngine = (String) arguments.getOrDefault("se", "g_us");
 
-        // Create formatted response
+        // Create a formatted response
         ObjectNode formattedResponse = mapper.createObjectNode();
         formattedResponse.put("status", "success");
         formattedResponse.put("method", "SerpstatDomainProcedure.getDomainCompetitors");
