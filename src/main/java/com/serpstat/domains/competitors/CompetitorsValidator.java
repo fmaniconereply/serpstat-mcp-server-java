@@ -22,7 +22,8 @@ public class CompetitorsValidator {
 
         String domain = (String) arguments.get("domain");
 
-        ValidationUtils.validateAndNormalizeDomain(domain);
+        String normalizedDomain = ValidationUtils.validateAndNormalizeDomain(domain);
+        arguments.put("domain", normalizedDomain);
 
         ValidationUtils.validateSearchEngines(arguments,"se", "g_us",true);
 
