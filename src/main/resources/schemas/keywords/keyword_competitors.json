@@ -1,0 +1,157 @@
+{
+  "type": "object",
+  "properties": {
+    "keyword": {
+      "type": "string",
+      "description": "Keyword to analyze competitors for",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "se": {
+      "type": "string",
+      "description": "Search engine database ID",
+      "enum": [
+        "g_us", "g_uk", "g_au", "g_ca", "g_de", "g_fr", "g_br",
+        "g_mx", "g_es", "g_it", "g_nl", "g_pl", "g_ua"
+      ],
+      "default": "g_us"
+    },
+    "size": {
+      "type": "integer",
+      "description": "Number of competitors to return",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 20
+    },
+    "filters": {
+      "type": "object",
+      "description": "Filter conditions for competitors",
+      "properties": {
+        "domain": {
+          "type": "array",
+          "description": "Include only these domains",
+          "items": {
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+            "minLength": 4,
+            "maxLength": 253
+          },
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "minus_domain": {
+          "type": "array",
+          "description": "Exclude these domains",
+          "items": {
+            "type": "string",
+            "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+            "minLength": 4,
+            "maxLength": 253
+          },
+          "maxItems": 100,
+          "uniqueItems": true
+        },
+        "visible": {
+          "type": "number",
+          "description": "Exact visibility value",
+          "minimum": 0
+        },
+        "visible_from": {
+          "type": "number",
+          "description": "Minimum visibility value",
+          "minimum": 0
+        },
+        "visible_to": {
+          "type": "number",
+          "description": "Maximum visibility value",
+          "minimum": 0
+        },
+        "traff": {
+          "type": "integer",
+          "description": "Exact traffic value",
+          "minimum": 0
+        },
+        "traff_from": {
+          "type": "integer",
+          "description": "Minimum traffic value",
+          "minimum": 0
+        },
+        "traff_to": {
+          "type": "integer",
+          "description": "Maximum traffic value",
+          "minimum": 0
+        },
+        "relevance": {
+          "type": "number",
+          "description": "Exact relevance value",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "relevance_from": {
+          "type": "number",
+          "description": "Minimum relevance value",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "relevance_to": {
+          "type": "number",
+          "description": "Maximum relevance value",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "our_relevance": {
+          "type": "number",
+          "description": "Exact our relevance value",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "our_relevance_from": {
+          "type": "number",
+          "description": "Minimum our relevance value",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "our_relevance_to": {
+          "type": "number",
+          "description": "Maximum our relevance value",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false
+    },
+    "sort": {
+      "type": "object",
+      "description": "Sort configuration",
+      "properties": {
+        "domain": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "visible": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "keywords": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "traff": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "relevance": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "our_relevance": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["keyword", "se"],
+  "additionalProperties": false
+}
