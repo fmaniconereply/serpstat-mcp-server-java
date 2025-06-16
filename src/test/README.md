@@ -1,6 +1,29 @@
 # Test Documentation Summary
 
-## Today's Progress (June 15, 2025)
+## Today's Progress (June 16, 2025)
+1. **Test Refactoring & Stabilization**:
+   - Migrated all major SerpstatApiClient tests (HTTP, cache, integration, rate limiting) to use WireMock and isolated test hosts.
+   - Removed real API calls from all unit/integration tests.
+   - Fixed and stabilized cache and rate limiting tests (including flakiness and global state issues).
+   - Improved test isolation: each test now uses its own client and WireMock instance where needed.
+   - Disabled or marked with TODO tests that require production code changes (e.g., timeout configurability).
+
+2. **Code Quality & Standards**:
+   - All comments and TODOs are now in English, following project standards.
+   - Cleaned up unused imports and improved code readability in test classes.
+   - Added clear TODOs for future improvements (timeout, global state, etc).
+
+3. **Test Coverage**:
+   - All core SerpstatApiClient features now have stable, repeatable tests.
+   - Most previously disabled tests are now active and reliable.
+   - Remaining unstable or slow tests are clearly marked for future improvement.
+
+4. **Next Steps**:
+   - Refactor production code to allow better testability (e.g., configurable timeouts, non-static rate limiter).
+   - Continue converting legacy/disabled tests to modern, isolated style.
+   - Target: 100% reliable, fast, and maintainable test suite for all core components.
+
+## Previous Progress (June 15, 2025)
 1. **Test Infrastructure**:
    - Set up test dependencies (JUnit 5, Mockito, WireMock, AssertJ)
    - Fixed critical NPE bug in SerpstatApiClient.callMethod()

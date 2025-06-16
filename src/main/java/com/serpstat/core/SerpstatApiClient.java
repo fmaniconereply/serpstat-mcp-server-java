@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class SerpstatApiClient {
 
     private static final String SERPSTAT_API_URL = "https://api.serpstat.com/v4";
+    // TODO: make REQUEST_TIMEOUT configurable for tests (see test for details)
     private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
 
     private final HttpClient httpClient;
@@ -62,16 +63,17 @@ public class SerpstatApiClient {
             throws SerpstatApiException {
 
         // Handle null parameters - prevents NullPointerException in cache key generation
-        // In real scenarios, this defect would not be reproduced due to proper parameter validation
         if (params == null) {
             params = Map.of(); // Use empty map instead of null
         }
 
         // Check cache
-        final String cacheKey = method + ":" + params.toString(); // BUG: NPE here if params is null (without fix above)
-        if (cache.getIfPresent(cacheKey) != null) {
-            return new SerpstatApiResponse((JsonNode) cache.getIfPresent(cacheKey), method, params);
+        final String cacheKey = method + ":" + params.toString();
+        SerpstatApiResponse cachedResponse = (SerpstatApiResponse) cache.getIfPresent(cacheKey);
+        if (cachedResponse != null) {
+            return cachedResponse;
         }
+
         try {
             // Rate limiting
             rateLimiter.waitIfNeeded();

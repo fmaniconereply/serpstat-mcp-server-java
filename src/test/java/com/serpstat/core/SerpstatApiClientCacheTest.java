@@ -4,12 +4,9 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
@@ -18,18 +15,13 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * Caching mechanism tests for SerpstatApiClient
  * Tests cache hits, misses, and configuration behavior
- * 
- * TODO: DISABLED - Convert to WireMock instead of real API calls
- * These tests currently make real HTTP requests to Serpstat API and fail with "Invalid token!"
- * Need to refactor to use WireMock for HTTP mocking like SerpstatApiClientPositivePathTest
  */
-@Disabled("TODO: Convert to WireMock - currently makes real API calls that fail with Invalid token!")
 @DisplayName("SerpstatApiClient Cache Tests")
 class SerpstatApiClientCacheTest {
 
     @RegisterExtension
     static WireMockExtension wireMock = WireMockExtension.newInstance()
-        .options(wireMockConfig().port(8090))
+        .options(wireMockConfig().dynamicPort())
         .build();
 
     private SerpstatApiClient client;
@@ -37,8 +29,19 @@ class SerpstatApiClientCacheTest {
 
     @BeforeEach
     void setUp() {
-        client = new SerpstatApiClient(TEST_TOKEN);
+        String wireMockUrl = String.format("http://localhost:%d/v4/", wireMock.getPort());
+        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
         wireMock.resetAll();
+        // Setup default successful response
+        wireMock.stubFor(post(anyUrl())
+            .willReturn(aResponse()
+                .withStatus(200)
+                .withBody("""
+                    {
+                        \"id\": 1,
+                        \"result\": {\"data\": \"test\"}
+                    }
+                    """)));
     }
 
     @Test
@@ -90,7 +93,6 @@ class SerpstatApiClientCacheTest {
                 "result": {"data": "response1"}
             }
             """;
-        
         String response2 = """
             {
                 "id": 1,
@@ -99,16 +101,13 @@ class SerpstatApiClientCacheTest {
             """;
 
         wireMock.stubFor(post(anyUrl())
-            .inScenario("cache-key-test")
-            .whenScenarioStateIs("STARTED")
+            .withRequestBody(matchingJsonPath("$.params.domain", equalTo("example.com")))
             .willReturn(aResponse()
                 .withStatus(200)
-                .withBody(response1))
-            .willSetStateTo("FIRST_CALLED"));
+                .withBody(response1)));
 
         wireMock.stubFor(post(anyUrl())
-            .inScenario("cache-key-test")
-            .whenScenarioStateIs("FIRST_CALLED")
+            .withRequestBody(matchingJsonPath("$.params.domain", equalTo("different.com")))
             .willReturn(aResponse()
                 .withStatus(200)
                 .withBody(response2)));
@@ -126,7 +125,7 @@ class SerpstatApiClientCacheTest {
         assertThat(firstResponse.getResult().path("data").asText()).isEqualTo("response1");
         assertThat(secondResponse.getResult().path("data").asText()).isEqualTo("response2");
         assertThat(thirdResponse.getResult().path("data").asText()).isEqualTo("response1"); // From cache
-        
+
         // Verify two HTTP requests were made (third was cached)
         wireMock.verify(2, postRequestedFor(anyUrl()));
     }

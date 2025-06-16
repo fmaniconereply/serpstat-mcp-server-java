@@ -20,26 +20,38 @@ import static org.assertj.core.api.Assertions.*;
 /**
  * HTTP request/response tests for SerpstatApiClient
  * Tests request formation, response parsing, and error handling
- * 
- * TODO: DISABLED - Convert to WireMock instead of real API calls
- * These tests currently make real HTTP requests to Serpstat API and fail with "Invalid token!"
- * Need to refactor to use WireMock for HTTP mocking like SerpstatApiClientPositivePathTest
  */
-@Disabled("TODO: Convert to WireMock - currently makes real API calls that fail with Invalid token!")
 @DisplayName("SerpstatApiClient HTTP Tests")
 class SerpstatApiClientHttpTest {
 
     @RegisterExtension
     static WireMockExtension wireMock = WireMockExtension.newInstance()
-        .options(wireMockConfig().port(8089))
+        .options(wireMockConfig().dynamicPort())
         .build();
 
     private SerpstatApiClient client;
     private ObjectMapper objectMapper;
-    private static final String TEST_TOKEN = "test-api-token";    @BeforeEach
+    private static final String TEST_TOKEN = "test-api-token";
+
+    // Testable client that overrides getApiUrl to use WireMock
+    static class TestableSerpstatApiClient extends SerpstatApiClient {
+        private final String apiUrl;
+        public TestableSerpstatApiClient(String token, String apiUrl) {
+            super(token);
+            this.apiUrl = apiUrl;
+        }
+        @Override
+        protected String getApiUrl() {
+            return apiUrl;
+        }
+    }
+
+    @BeforeEach
     void setUp() {
-        client = new SerpstatApiClient(TEST_TOKEN);
+        String wireMockUrl = String.format("http://localhost:%d/v4", wireMock.getPort()); // Убираем лишний слэш
+        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
         objectMapper = new ObjectMapper();
+        wireMock.resetAll();
     }
 
     @Test
