@@ -55,8 +55,12 @@ This is alpha release v0.0.1.
    ```
    
 ## Integration into Claude Desktop
-- Open in Claude Desktop  `Settings → General → Claude Settings -> Configure`
-- Add configuration with your path to jar file and token. Save it.
+
+- Click the menu icon (three lines, "burger") in the top right corner of Claude Desktop to open **Settings**.
+- In the menu, select **General → Claude Settings → Configure** (this opens your profile settings).
+- In the profile settings, go to the **Developer** tab and click **Edit config** to add or update your MCP server configuration.
+- Add configuration with your path to the JAR file and token. Save it.
+
 ```json
 {
    "mcpServers": {
@@ -162,6 +166,4 @@ MIT License
 - The only thing you need to do is not delete the copyright and the license itself from the files you take, and remember the Serpstat team with a kind word when you get that paycheck.
 
 
-_With love, Serpstat R&D Team_ 
-
-```
+_With love, Serpstat R&D Team_
