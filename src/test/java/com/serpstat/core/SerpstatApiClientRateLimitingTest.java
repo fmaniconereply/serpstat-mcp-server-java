@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -92,37 +93,33 @@ class SerpstatApiClientRateLimitingTest {
     @Test
     @DisplayName("Should reset rate window correctly")
     void shouldResetRateWindowCorrectly() throws Exception {
-        // Given
-        ExecutorService executor = Executors.newFixedThreadPool(10);
+        int threads = 10;
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
         AtomicInteger requestCount = new AtomicInteger();
+        CountDownLatch latch = new CountDownLatch(threads);
 
         wireMock.stubFor(post(anyUrl())
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withBody("""
-                                {
-                                    \"id\": 1,
-                                    \"result\": {\"data\": \"test\"}
-                                }
-                                """)));
+                        .withBody("{\"id\": 1, \"result\": {\"data\": \"test\"}}")));
 
-        // When
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < threads; i++) {
             executor.submit(() -> {
                 try {
                     client.callMethod("test.method", Map.of("key", "value"));
                     requestCount.incrementAndGet();
                 } catch (Exception ignored) {
+                } finally {
+                    latch.countDown();
                 }
             });
         }
 
+        latch.await(5, TimeUnit.SECONDS);
         executor.shutdown();
-        executor.awaitTermination(5, TimeUnit.SECONDS);
 
-        // Then
-        wireMock.verify(10, postRequestedFor(anyUrl()));
-        assertThat(requestCount.get()).isEqualTo(10); // Убедиться, что выполнено ровно 10 запросов
+        wireMock.verify(threads, postRequestedFor(anyUrl()));
+        assertThat(requestCount.get()).isEqualTo(threads);
     }
 
     @Test
@@ -151,7 +148,7 @@ class SerpstatApiClientRateLimitingTest {
 
     @Test
     @DisplayName("Should delay requests exceeding limit")
-    
+
     void shouldDelayRequestsExceedingLimit() throws Exception {
         // Create a new client for this test to isolate rate limiter
         SerpstatApiClient isolatedClient = new TestableSerpstatApiClient(TEST_TOKEN,
@@ -251,8 +248,6 @@ class SerpstatApiClientRateLimitingTest {
     @Test
     @DisplayName("Should maintain rate limit across different API methods")
     void shouldMaintainRateLimitAcrossDifferentMethods() throws Exception {
-        // Given
-        Map<String, Object> params = Map.of("test", "value");
         String[] methods = {
                 "SerpstatDomainProcedure.getInfo",
                 "SerpstatDomainProcedure.getKeywords",
