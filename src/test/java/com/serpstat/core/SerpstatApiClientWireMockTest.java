@@ -47,11 +47,11 @@ class SerpstatApiClientWireMockTest {
         // Given: Mock successful API response
         stubFor(post(urlPathEqualTo("/v4/"))
                 .withQueryParam("token", equalTo("test-token"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(containing("api_stats"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody("""
                             {
                                 "id": 1,
@@ -72,7 +72,7 @@ class SerpstatApiClientWireMockTest {
         // Verify HTTP request was made correctly
         verify(postRequestedFor(urlPathEqualTo("/v4/"))
                 .withQueryParam("token", equalTo("test-token"))
-                .withHeader("Content-Type", equalTo("application/json")));
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8")));
     }
 
     @Test
@@ -82,7 +82,7 @@ class SerpstatApiClientWireMockTest {
                 .withQueryParam("token", equalTo("test-token"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody("""
                             {
                                 "id": 1,
@@ -120,7 +120,7 @@ class SerpstatApiClientWireMockTest {
         stubFor(post(urlPathEqualTo("/v4/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody("""
                             {
                                 "id": 1,
@@ -149,7 +149,7 @@ class SerpstatApiClientWireMockTest {
         stubFor(post(urlPathEqualTo("/v4/"))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody("""
                             {
                                 "id": 1,

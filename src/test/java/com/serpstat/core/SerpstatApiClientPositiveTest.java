@@ -53,11 +53,11 @@ class SerpstatApiClientPositivePathTest {
         // Given: Mock api_stats response
         stubFor(post(urlPathEqualTo("/v4/"))
                 .withQueryParam("token", equalTo("test-api-token"))
-                .withHeader("Content-Type", equalTo("application/json"))
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
                 .withRequestBody(matchingJsonPath("$.method", equalTo("api_stats")))
                 .willReturn(aResponse()
                         .withStatus(200)
-                        .withHeader("Content-Type", "application/json")
+                        .withHeader("Content-Type", "application/json; charset=UTF-8")
                         .withBody("""
                             {
                                 "id": 1,
@@ -84,7 +84,7 @@ class SerpstatApiClientPositivePathTest {
         // Verify correct HTTP request was made
         verify(exactly(1), postRequestedFor(urlPathEqualTo("/v4/"))
                 .withQueryParam("token", equalTo("test-api-token"))
-                .withHeader("Content-Type", equalTo("application/json")));
+                .withHeader("Content-Type", equalTo("application/json; charset=UTF-8")));
     }
 
     @Test

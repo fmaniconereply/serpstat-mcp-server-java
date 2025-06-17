@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -69,7 +70,7 @@ class SerpstatApiClientTest {
         assertThat(response.getResult().path("data").asText()).isEqualTo("test-data");
         
         wireMock.verify(postRequestedFor(anyUrl())
-            .withHeader("Content-Type", equalTo("application/json"))
+            .withHeader("Content-Type", equalTo("application/json; charset=UTF-8"))
             .withRequestBody(matchingJsonPath("$.method", equalTo("test.method")))
             .withRequestBody(matchingJsonPath("$.params.test_param", equalTo("test_value"))));
     }
@@ -183,11 +184,16 @@ class SerpstatApiClientTest {
 
     @Test
     @DisplayName("Should handle timeout correctly")
-    @org.junit.jupiter.api.Disabled("TODO: Make timeout configurable in SerpstatApiClient for fast and reliable testing.")
     void shouldHandleTimeoutCorrectly() throws Exception {
-        // TODO: Make SerpstatApiClient timeout configurable for proper unit testing (see REQUEST_TIMEOUT in implementation)
-        // Current implementation uses static final timeout, so this test would always take 30+ seconds.
-        // See SerpstatApiClient.REQUEST_TIMEOUT for improvement suggestion.
+        Duration timeout = Duration.ofMillis(50);
+        client = new TestableSerpstatApiClient(TEST_TOKEN, String.format("http://localhost:%d/v4", wireMock.getPort()), timeout);
+        wireMock.stubFor(post(anyUrl())
+            .willReturn(aResponse()
+                .withFixedDelay(200)
+                .withBody("{\"id\":1,\"result\":{}}")));
+        assertThatThrownBy(() -> client.callMethod("test.method", Map.of()))
+            .isInstanceOf(SerpstatApiException.class)
+            .hasCauseInstanceOf(java.net.http.HttpTimeoutException.class);
     }
 
     @Test
@@ -210,7 +216,8 @@ class SerpstatApiClientTest {
         AtomicInteger errorCount = new AtomicInteger(0);
 
         // When
-        CompletableFuture<Void>[] futures = new CompletableFuture[numberOfThreads];
+        @SuppressWarnings("unchecked")
+        CompletableFuture<Void>[] futures = (CompletableFuture<Void>[]) new CompletableFuture[numberOfThreads];
         
         for (int i = 0; i < numberOfThreads; i++) {
             final int threadId = i;
@@ -307,8 +314,7 @@ class SerpstatApiClientTest {
 
         // Then
         wireMock.verify(postRequestedFor(anyUrl())
-            .withHeader("Content-Type", equalTo("application/json"))
-            .withHeader("Authorization", equalTo("Bearer " + TEST_TOKEN)));
+            .withHeader("Content-Type", equalTo("application/json; charset=UTF-8")));
     }
 
     @Test
@@ -406,5 +412,15 @@ class SerpstatApiClientTest {
             .withRequestBody(matchingJsonPath("$.params.string_param", equalTo("text")))
             .withRequestBody(matchingJsonPath("$.params.int_param", equalTo("123")))
             .withRequestBody(matchingJsonPath("$.params.boolean_param", equalTo("true"))));
+    }
+
+    static class TestableSerpstatApiClient extends SerpstatApiClient {
+        public TestableSerpstatApiClient(String token, String apiUrl) {
+            super(token, apiUrl);
+        }
+
+        public TestableSerpstatApiClient(String token, String apiUrl, Duration requestTimeout) {
+            super(token, apiUrl, requestTimeout);
+        }
     }
 }

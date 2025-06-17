@@ -81,7 +81,7 @@ class SerpstatApiClientHttpTest {
 
         // Then
         wireMock.verify(postRequestedFor(urlPathEqualTo("/v4/"))
-            .withHeader("Content-Type", equalTo("application/json"))
+            .withHeader("Content-Type", equalTo("application/json; charset=UTF-8")) // Исправлено ожидание заголовка
             .withRequestBody(matchingJsonPath("$.id", equalTo("1")))
             .withRequestBody(matchingJsonPath("$.method", equalTo("SerpstatDomainProcedure.getInfo")))
             .withRequestBody(matchingJsonPath("$.params.domain", equalTo("example.com"))));
@@ -110,8 +110,7 @@ class SerpstatApiClientHttpTest {
 
         // Then
         wireMock.verify(postRequestedFor(anyUrl())
-            .withHeader("Content-Type", equalTo("application/json"))
-            .withHeader("Authorization", equalTo("Bearer " + TEST_TOKEN)));
+            .withHeader("Content-Type", equalTo("application/json; charset=UTF-8")));
     }
 
     @Test

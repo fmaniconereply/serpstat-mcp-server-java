@@ -28,31 +28,44 @@ import java.util.concurrent.TimeUnit;
 public class SerpstatApiClient {
 
     private static final String SERPSTAT_API_URL = "https://api.serpstat.com/v4";
-    // TODO: make REQUEST_TIMEOUT configurable for tests (see test for details)
-    private static final Duration REQUEST_TIMEOUT = Duration.ofSeconds(30);
+    private static final Duration DEFAULT_REQUEST_TIMEOUT = Duration.ofSeconds(30);
 
-    private final HttpClient httpClient;
-    private final ObjectMapper objectMapper;
     private final String apiToken;
-    private final Cache<String, Object> cache;
-    private final RateLimiter rateLimiter;
+    private String apiUrl;
+    private final HttpClient httpClient;
+    private final Cache<String, SerpstatApiResponse> cache;
     private final String version;
+    private final ObjectMapper objectMapper;
+    private final RateLimiter rateLimiter;
+    private final Duration requestTimeout;
 
+    /**
+     * Default constructor uses production Serpstat API URL
+     */
     public SerpstatApiClient(String apiToken) {
+        this(apiToken, SERPSTAT_API_URL, DEFAULT_REQUEST_TIMEOUT);
+    }
+
+    /**
+     * Constructor for custom API URL (for testing/mocking)
+     */
+    public SerpstatApiClient(String apiToken, String apiUrl) {
+        this(apiToken, apiUrl, DEFAULT_REQUEST_TIMEOUT);
+    }
+
+    public SerpstatApiClient(String apiToken, String apiUrl, Duration requestTimeout) {
         this.apiToken = apiToken;
+        this.apiUrl = apiUrl;
+        this.requestTimeout = requestTimeout;
         this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(REQUEST_TIMEOUT)
+                .connectTimeout(requestTimeout)
                 .build();
         this.cache = Caffeine.newBuilder()
                 .expireAfterWrite(60, TimeUnit.MINUTES)
                 .maximumSize(1000)
                 .build();
-
         this.version = VersionUtils.getVersion();
-
-        // Configure ObjectMapper for proper UTF-8 handling
         this.objectMapper = new ObjectMapper();
-
         this.rateLimiter = new RateLimiter(10, Duration.ofSeconds(1));
     }
 
@@ -60,7 +73,14 @@ public class SerpstatApiClient {
      * Protected method to get API URL - allows overriding in tests
      */
     protected String getApiUrl() {
-        return SERPSTAT_API_URL;
+        return apiUrl;
+    }
+
+    /**
+     * Protected method to get request timeout - allows overriding in tests
+     */
+    protected Duration getRequestTimeout() {
+        return requestTimeout;
     }
 
     /**
@@ -77,7 +97,7 @@ public class SerpstatApiClient {
 
         // Check cache
         final String cacheKey = method + ":" + params.toString();
-        SerpstatApiResponse cachedResponse = (SerpstatApiResponse) cache.getIfPresent(cacheKey);
+        SerpstatApiResponse cachedResponse = cache.getIfPresent(cacheKey);
         if (cachedResponse != null) {
             return cachedResponse;
         }
@@ -97,13 +117,13 @@ public class SerpstatApiClient {
 
             // Create an HTTP request with explicit UTF-8 charset
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(SERPSTAT_API_URL + "/?token=" + apiToken))
+                    .uri(URI.create(getApiUrl() + "/?token=" + apiToken))
                     .header("Content-Type", "application/json; charset=UTF-8")
                     .header("Accept", "application/json; charset=UTF-8")
                     .header("Accept-Charset", "UTF-8")
                     .header("User-Agent", "Serpstat MCP Server Java/" + this.version)
                     .POST(HttpRequest.BodyPublishers.ofString(jsonBody, StandardCharsets.UTF_8))
-                    .timeout(REQUEST_TIMEOUT)
+                    .timeout(getRequestTimeout())
                     .build();
 
             HttpResponse<String> response = httpClient.send(request,
@@ -124,7 +144,7 @@ public class SerpstatApiClient {
             final SerpstatApiResponse apiResponse = new SerpstatApiResponse(responseJson.get("result"), method, params);
 
             // Save result to cache
-            cache.put(cacheKey, apiResponse.getResult());
+            cache.put(cacheKey, apiResponse);
 
             return apiResponse;
 
