@@ -129,10 +129,9 @@ public class RelatedKeywordsValidator {
         // Validate geo names filter
         Object geoNamesObj = filters.get("geo_names");
         if (geoNamesObj != null) {
-            if (!(geoNamesObj instanceof String)) {
+            if (!(geoNamesObj instanceof String geoNames)) {
                 throw new ValidationException("Filter 'geo_names' must be a string");
             }
-            String geoNames = (String) geoNamesObj;
             if (!Set.of("contain", "not_contain").contains(geoNames)) {
                 throw new ValidationException("Filter 'geo_names' must be either 'contain' or 'not_contain'");
             }
