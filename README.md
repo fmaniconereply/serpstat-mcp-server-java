@@ -135,6 +135,18 @@ domain lists, traffic ranges, visibility thresholds, and relevance scores. Each 
 minimum charge of 1 credit per request (even for empty results). Essential for competitive analysis, keyword difficulty
 assessment, and market opportunity identification.
 
+### `get_related_keywords` 🆕
+
+Find semantically related keywords to expand the content strategy. Returns keywords with search volume, cost per click,
+connection strength, difficulty scores, and comprehensive semantic analysis. Shows all search queries that are
+semantically related to the searched keyword with detailed analytics on relationship strength (weight), search intent
+distribution, SERP features presence, and geographic relevance. Includes advanced filtering by volume ranges, difficulty
+levels, connection strength, keyword patterns, intents, and SERP features. Provides intelligent content strategy
+recommendations based on semantic clustering: semantic expansion for strongly connected keywords, quick wins for
+low-difficulty opportunities, local targeting for geo-focused terms, and long-tail strategies for niche markets. Each
+keyword costs 1 API credit with a minimum charge of one credit per request (even for empty results). Essential for content
+gap analysis, semantic SEO planning, and comprehensive keyword universe mapping.
+
 ## Logging
 
 Logs are written to:

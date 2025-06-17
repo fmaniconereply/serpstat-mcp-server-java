@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 public class KeywordSchemas {
 
     public static final String GET_KEYWORDS_SCHEMA = loadSchema("get_keywords.json");
+    public static final String GET_RELATED_KEYWORDS_SCHEMA = loadSchema("get_related_keywords.json");
 
     private static String loadSchema(String filename) {
         try (InputStream is = KeywordSchemas.class.getResourceAsStream("/schemas/keywords/" + filename)) {
