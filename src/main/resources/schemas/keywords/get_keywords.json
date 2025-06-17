@@ -1,0 +1,239 @@
+{
+  "type": "object",
+  "properties": {
+    "keyword": {
+      "type": "string",
+      "description": "Keyword to search for related keywords",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "se": {
+      "type": "string",
+      "description": "Search engine database ID",
+      "enum": [
+        "g_us", "g_uk", "g_au", "g_ca", "g_de",
+        "g_fr", "g_br", "g_mx", "g_es", "g_bg",
+        "g_it", "g_nl", "g_pl", "g_ua"
+      ],
+      "default": "g_us"
+    },
+    "minusKeywords": {
+      "type": "array",
+      "description": "List of keywords to exclude from the search",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "maxItems": 50
+    },
+    "withIntents": {
+      "type": "boolean",
+      "description": "Include keyword intents (works for most major databases g_us,g_uk,g_ua)",
+      "default": false
+    },
+    "page": {
+      "type": "integer",
+      "description": "Page number in response",
+      "minimum": 1,
+      "default": 1
+    },
+    "size": {
+      "type": "integer",
+      "description": "Number of results per page",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 100
+    },
+    "sort": {
+      "type": "object",
+      "description": "Sort configuration",
+      "properties": {
+        "region_queries_count": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "cost": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "difficulty": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "concurrency": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "found_results": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "keyword_length": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "filters": {
+      "type": "object",
+      "description": "Filter conditions",
+      "properties": {
+        "cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "cost_from": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "cost_to": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 200
+        },
+        "region_queries_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "region_queries_count_from": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "region_queries_count_to": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000000
+        },
+        "keyword_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "keyword_length_from": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "keyword_length_to": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "difficulty": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "difficulty_from": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "difficulty_to": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "concurrency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "concurrency_from": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "concurrency_to": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "right_spelling": {
+          "type": "boolean",
+          "description": "Filter by spelling correctness"
+        },
+        "keyword_contain": {
+          "type": "array",
+          "description": "Keywords must contain all these terms (exact matching)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keyword_not_contain": {
+          "type": "array",
+          "description": "Keywords must not contain these terms (exact matching)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keyword_contain_one_of": {
+          "type": "array",
+          "description": "Keywords must contain at least one of these terms",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keyword_not_contain_one_of": {
+          "type": "array",
+          "description": "Keywords must not contain any of these terms",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keyword_contain_broad_match": {
+          "type": "array",
+          "description": "Keywords must contain all these terms (broad match)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keyword_not_contain_broad_match": {
+          "type": "array",
+          "description": "Keywords must not contain these terms (broad match)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "en", "ar", "hy", "af", "be",
+            "bg", "hu", "vi", "el", "da",
+            "iw", "id", "is", "es", "it",
+            "ca", "zh-TW", "zh-CN", "ko",
+            "lv", "lt", "de", "nl", "no",
+            "fa", "pl", "pt", "ro", "ru",
+            "sr", "sk", "sl", "sw", "th",
+            "tr", "uk", "tl", "fi", "fr",
+            "hi", "hr", "cs", "sv", "eo",
+            "et", "ja", "kk", "tt"
+          ],
+          "description": "Keyword language"
+        },
+        "intents_contain": {
+          "type": "array",
+          "description": "Keywords must contain these intents",
+          "items": {
+            "type": "string",
+            "enum": ["informational", "navigational", "commercial", "transactional"]
+          }
+        },
+        "intents_not_contain": {
+          "type": "array",
+          "description": "Keywords must not contain these intents",
+          "items": {
+            "type": "string",
+            "enum": ["informational", "navigational", "commercial", "transactional"]
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["keyword", "se"],
+  "additionalProperties": false
+}

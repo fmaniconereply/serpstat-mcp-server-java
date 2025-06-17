@@ -1,7 +1,7 @@
 package com.serpstat.domains.backlinks;
 
 import com.serpstat.core.ValidationException;
-import com.serpstat.domains.constants.Patterns;
+import com.serpstat.domains.utils.ValidationUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -46,12 +46,8 @@ public class BacklinksSummaryValidator {
         }
 
         // Validate domain
+        query = ValidationUtils.validateAndNormalizeDomain(query);
 
-        if (!Patterns.DOMAIN_PATTERN.matcher(query.toLowerCase()).matches()) {
-            throw new ValidationException(String.format(
-                    "Invalid domain format: '%s'. Expected format: example.com", query
-            ));
-        }
         // Normalize domain to lowercase
         arguments.put("query", query.toLowerCase());
 

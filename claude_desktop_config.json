@@ -2,9 +2,11 @@
   "mcpServers": {
     "serpstat": {
       "command": "java",
-      "args": ["-jar", "/path/to/jar/location/serpstat-mcp-server-java-0.0.1.jar"],
+      "args": ["-jar", "/path/to/jar/location/serpstat-mcp-server-java-0.0.2.jar"],
       "env": {
-        "SERPSTAT_API_TOKEN": "PLACE_API_TOKEN_HERE"
+        "SERPSTAT_API_TOKEN": "PLACE_API_TOKEN_HERE",
+        "LANG": "en_US.UTF-8",
+        "LC_ALL": "en_US.UTF-8"
       }
     }
   }

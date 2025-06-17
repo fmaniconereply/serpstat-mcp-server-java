@@ -2,6 +2,7 @@ package com.serpstat.core;
 
 import com.serpstat.domains.backlinks.BacklinksTools;
 import com.serpstat.domains.credits.CreditsTools;
+import com.serpstat.domains.keywords.KeywordTools;
 import com.serpstat.domains.projects.ProjectsTools;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.McpServerFeatures;
@@ -37,9 +38,7 @@ public class ToolRegistry {
         providers.add(new BacklinksTools(apiClient));
         providers.add(new CreditsTools(apiClient));
         providers.add(new ProjectsTools(apiClient));
-        // providers.add(new KeywordTools(apiClient));
-        // providers.add(new CompetitorsTools(apiClient));
-        // TODO: добавить остальные домены
+        providers.add(new KeywordTools(apiClient));
 
         return providers;
     }

@@ -4,12 +4,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-public class KeywordSchemas {
+/**
+ * JSON schemas for keyword competitors tools
+ */
+public class KeywordCompetitorsSchemas {
 
-    public static final String GET_KEYWORDS_SCHEMA = loadSchema("get_keywords.json");
+    /**
+     * JSON schema for keyword competitors method
+     */
+    public static final String KEYWORD_COMPETITORS_SCHEMA = loadSchema("keyword_competitors.json");
 
     private static String loadSchema(String filename) {
-        try (InputStream is = KeywordSchemas.class.getResourceAsStream("/schemas/keywords/" + filename)) {
+        try (InputStream is = KeywordCompetitorsSchemas.class.getResourceAsStream("/schemas/keywords/" + filename)) {
             if (is == null) {
                 throw new RuntimeException("Schema file not found: " + filename);
             }
