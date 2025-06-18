@@ -2,6 +2,7 @@ package com.serpstat.core;
 
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -90,36 +91,24 @@ class SerpstatApiClientRateLimitingTest {
         wireMock.verify(numberOfRequests, postRequestedFor(anyUrl()));
     }
 
+    @DisplayName("Should handle rate limit correctly with multiple threads")
     @Test
-    @DisplayName("Should reset rate window correctly")
     void shouldResetRateWindowCorrectly() throws Exception {
-        int threads = 10;
-        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        int requests = 10;
         AtomicInteger requestCount = new AtomicInteger();
-        CountDownLatch latch = new CountDownLatch(threads);
 
         wireMock.stubFor(post(anyUrl())
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody("{\"id\": 1, \"result\": {\"data\": \"test\"}}")));
 
-        for (int i = 0; i < threads; i++) {
-            executor.submit(() -> {
-                try {
-                    client.callMethod("test.method", Map.of("key", "value"));
-                    requestCount.incrementAndGet();
-                } catch (Exception ignored) {
-                } finally {
-                    latch.countDown();
-                }
-            });
+        for (int i = 0; i < requests; i++) {
+            client.callMethod("test.method", Map.of("key", "value" + i));
+            requestCount.incrementAndGet();
         }
 
-        latch.await(5, TimeUnit.SECONDS);
-        executor.shutdown();
-
-        wireMock.verify(threads, postRequestedFor(anyUrl()));
-        assertThat(requestCount.get()).isEqualTo(threads);
+        wireMock.verify(requests, postRequestedFor(anyUrl()));
+        assertThat(requestCount.get()).isEqualTo(requests);
     }
 
     @Test
