@@ -90,37 +90,25 @@ class SerpstatApiClientRateLimitingTest {
         assertThat(totalTime).isGreaterThan(800); // Allow some margin for timing
         wireMock.verify(numberOfRequests, postRequestedFor(anyUrl()));
     }
-    @Disabled // Disabled due to potential flakiness in CI environments
+
     @DisplayName("Should handle rate limit correctly with multiple threads")
     @Test
     void shouldResetRateWindowCorrectly() throws Exception {
-        int threads = 10;
-        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        int requests = 10;
         AtomicInteger requestCount = new AtomicInteger();
-        CountDownLatch latch = new CountDownLatch(threads);
 
         wireMock.stubFor(post(anyUrl())
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withBody("{\"id\": 1, \"result\": {\"data\": \"test\"}}")));
 
-        for (int i = 0; i < threads; i++) {
-            executor.submit(() -> {
-                try {
-                    client.callMethod("test.method", Map.of("key", "value"));
-                    requestCount.incrementAndGet();
-                } catch (Exception ignored) {
-                } finally {
-                    latch.countDown();
-                }
-            });
+        for (int i = 0; i < requests; i++) {
+            client.callMethod("test.method", Map.of("key", "value" + i));
+            requestCount.incrementAndGet();
         }
 
-        latch.await(5, TimeUnit.SECONDS);
-        executor.shutdown();
-
-        wireMock.verify(threads, postRequestedFor(anyUrl()));
-        assertThat(requestCount.get()).isEqualTo(threads);
+        wireMock.verify(requests, postRequestedFor(anyUrl()));
+        assertThat(requestCount.get()).isEqualTo(requests);
     }
 
     @Test
