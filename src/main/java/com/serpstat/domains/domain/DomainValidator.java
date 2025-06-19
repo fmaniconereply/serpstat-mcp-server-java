@@ -196,4 +196,29 @@ public class DomainValidator {
             ValidationUtils.validateIntentFilter(filters, "intents_not_contain");
         }
     }
+
+    public static void validateDomainUrlsRequest(Map<String, Object> arguments)
+            throws ValidationException {
+
+        // Validate domain parameter
+        String domain = ValidationUtils.validateAndNormalizeDomain(arguments.get("domain"));
+        arguments.put("domain", domain);
+
+        // Validate search engine parameter
+        ValidationUtils.validateSearchEngines(arguments, "se", "g_us", true);
+
+        // Validate pagination parameters
+        ValidationUtils.validatePaginationParameters(arguments);
+        ValidationUtils.validatePaginationSizeParameters(arguments);
+
+        // Validate sort parameters
+        Set<String> validSortFields = Set.of("keywords");
+        ValidationUtils.validateSortParameters(arguments, validSortFields);
+
+        // Validate filters if present
+        Object filtersObj = arguments.get("filters");
+        if (filtersObj != null) {
+            DomainUrlsValidator.validateFiltersParameters(filtersObj);
+        }
+    }
 }

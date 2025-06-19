@@ -28,7 +28,9 @@ public class DomainTools extends BaseToolHandler implements ToolProvider {
         return List.of(
                 createGetDomainsInfoTool(),
                 createRegionsCountTool(),
-                createDomainKeywordsTool()
+                createDomainKeywordsTool(),
+                createDomainUrlsTool(),
+                createGetDomainsUniqKeywordsTool()
         );
     }
 
@@ -60,31 +62,44 @@ public class DomainTools extends BaseToolHandler implements ToolProvider {
         );
     }
 
+    /**
+     * Create get domains unique keywords tool specification
+     */
+    private McpServerFeatures.SyncToolSpecification createGetDomainsUniqKeywordsTool() {
+        return new McpServerFeatures.SyncToolSpecification(
+                new Tool(
+                        "get_domains_uniq_keywords",
+                        "Analyze keyword gaps between competitors - find keywords that your competitors rank for but you don't (or vice versa). Perfect for discovering missed opportunities and competitive advantages. Shows unique keywords from up to 2 domains that a third domain doesn't rank for. Essential for competitive SEO strategy and content gap analysis.",
+                        DomainSchemas.DOMAINS_UNIQ_KEYWORDS_SCHEMA
+                ),
+                this::handleGetDomainsUniqKeywords
+        );
+    }
 
 /**
-     * Creates the specification for the domain keywords analysis tool.
-     * <p>
-     * Usage examples:
-     * <ul>
-     *     <li>Basic keyword analysis:<br>
-     *         <pre>"Show keywords for nike.com domain in Google US"</pre>
-     *     </li>
-     *     <li>Analysis with filters:<br>
-     *         <pre>"Find keywords for nike.com only in top-10 positions"</pre>
-     *     </li>
-     *     <li>Specific page analysis:<br>
-     *         <pre>"Show keywords for URL &lt;a href=&quot;https://nike.com/soccer&quot;&gt;...&lt;/a&gt;"</pre>
-     *     </li>
-     *     <li>Analysis with exclusions:<br>
-     *         <pre>"Find keywords for domain, but exclude words 'brand' and 'company'"</pre>
-     *     </li>
-     *     <li>Detailed analysis:<br>
-     *         <pre>"Analyze domain keywords with high difficulty (difficulty &gt; 70)"</pre>
-     *     </li>
-     * </ul>
-     *
-     * @return the specification for the domain keywords analysis tool
-     */
+ * Creates the specification for the domain keywords analysis tool.
+ * <p>
+ * Usage examples:
+ * <ul>
+ *     <li>Basic keyword analysis:<br>
+ *         <pre>"Show keywords for nike.com domain in Google US"</pre>
+ *     </li>
+ *     <li>Analysis with filters:<br>
+ *         <pre>"Find keywords for nike.com only in top-10 positions"</pre>
+ *     </li>
+ *     <li>Specific page analysis:<br>
+ *         <pre>"Show keywords for URL "</pre>
+ *     </li>
+ *     <li>Analysis with exclusions:<br>
+ *         <pre>"Find keywords for domain, but exclude words 'brand' and 'company'"</pre>
+ *     </li>
+ *     <li>Detailed analysis:<br>
+ *         <pre>"Analyze domain keywords with high difficulty (difficulty &gt; 70)"</pre>
+ *     </li>
+ * </ul>
+ *
+ * @return the specification for the domain keywords analysis tool
+ */
     private McpServerFeatures.SyncToolSpecification createDomainKeywordsTool() {
         return new McpServerFeatures.SyncToolSpecification(
                 new Tool(
@@ -95,6 +110,21 @@ public class DomainTools extends BaseToolHandler implements ToolProvider {
                 this::handleDomainKeywords
         );
     }
+
+    /**
+     * Create domain URLs tool specification
+     */
+    private McpServerFeatures.SyncToolSpecification createDomainUrlsTool() {
+        return new McpServerFeatures.SyncToolSpecification(
+                new Tool(
+                        "get_domain_urls",
+                        "Get URLs within a domain and keyword count for each URL. Analyze URL structure, performance distribution, and identify top-performing pages. Each URL costs 1 API credit, minimum 1 credit per request.",
+                        DomainSchemas.DOMAIN_URLS_SCHEMA
+                ),
+                this::handleDomainUrls
+        );
+    }
+
     private CallToolResult handleDomainKeywords(McpSyncServerExchange exchange, Map<String, Object> arguments) {
         return handleToolCall(exchange, arguments, "getDomainKeywords", (args) -> {
             // Validation
@@ -174,6 +204,64 @@ public class DomainTools extends BaseToolHandler implements ToolProvider {
         });
     }
 
+    /**
+     * Handle domain URLs request
+     */
+    private CallToolResult handleDomainUrls(McpSyncServerExchange exchange, Map<String, Object> arguments) {
+        return handleToolCall(exchange, arguments, "getDomainUrls", (args) -> {
+            // Validation
+            DomainValidator.validateDomainUrlsRequest(args);
+
+            // Log request details
+            String domain = (String) args.get("domain");
+            String searchEngine = (String) args.get("se");
+            Integer page = (Integer) args.getOrDefault("page", 1);
+            Integer size = (Integer) args.getOrDefault("size", 100);
+
+            exchange.loggingNotification(
+                    LoggingMessageNotification.builder()
+                            .level(LoggingLevel.DEBUG)
+                            .logger("DomainTools")
+                            .data(String.format("Analyzing URLs for %s in %s (page %d, size %d)",
+                                    domain, searchEngine, page, size))
+                            .build()
+            );
+
+            // Call Serpstat API
+            return apiClient.callMethod("SerpstatDomainProcedure.getDomainUrls", args);
+        });
+    }
+
+
+    /**
+     * Handle get domains unique keywords request
+     */
+    private CallToolResult handleGetDomainsUniqKeywords(McpSyncServerExchange exchange, Map<String, Object> arguments) {
+        return handleToolCall(exchange, arguments, "getDomainsUniqKeywords", (args) -> {
+            // Validation
+            DomainUniqueKeywordsValidator.validateDomainsUniqKeywordsRequest(args);
+
+            // Log request details
+            @SuppressWarnings("unchecked")
+            List<String> domains = (List<String>) args.get("domains");
+            String minusDomain = (String) args.get("minusDomain");
+            String searchEngine = (String) args.get("se");
+            Integer page = (Integer) args.getOrDefault("page", 1);
+            Integer size = (Integer) args.getOrDefault("size", 100);
+
+            exchange.loggingNotification(
+                    LoggingMessageNotification.builder()
+                            .level(LoggingLevel.DEBUG)
+                            .logger("DomainTools")
+                            .data(String.format("Analyzing unique keywords for %s (excluding %s) in %s (page %d, size %d)",
+                                    String.join(" and ", domains), minusDomain, searchEngine, page, size))
+                            .build()
+            );
+
+            // Call Serpstat API
+            return apiClient.callMethod("SerpstatDomainProcedure.getDomainsUniqKeywords", args);
+        });
+    }
     /*
      * Format response based on method
      */
@@ -186,9 +274,15 @@ public class DomainTools extends BaseToolHandler implements ToolProvider {
                     DomainResponseFormatter.formatRegionsCount(response, arguments, objectMapper);
             case "SerpstatDomainProcedure.getDomainKeywords" ->
                     DomainResponseFormatter.formatDomainKeywords(response, arguments, objectMapper);
+            case "SerpstatDomainProcedure.getDomainUrls" ->
+                    DomainUrlsResponseFormatter.format(response, arguments, objectMapper);
+            case "SerpstatDomainProcedure.getDomainsUniqKeywords" ->
+                    DomainUniqueKeywordsResponseFormatter.format(response, arguments, objectMapper);
             default ->
                 // Default to existing format method for getDomainsInfo
                     DomainResponseFormatter.format(response, arguments, objectMapper);
         };
     }
+
+
 }
