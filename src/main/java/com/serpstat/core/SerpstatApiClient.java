@@ -43,34 +43,14 @@ public class SerpstatApiClient {
      * Default constructor uses production Serpstat API URL
      */
     public SerpstatApiClient(String apiToken) {
-        if (isTestEnvironment() && isProductionUrl(SERPSTAT_API_URL)) {
-            throw new IllegalStateException("Test environment must not use production Serpstat API URL!");
-        }
-        this.apiToken = apiToken;
-        this.apiUrl = SERPSTAT_API_URL;
-        this.requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-        this.httpClient = HttpClient.newBuilder().build();
-        this.cache = Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES).maximumSize(1000).build();
-        this.version = VersionUtils.getVersion();
-        this.objectMapper = new ObjectMapper();
-        this.rateLimiter = new RateLimiter(10);
+        this(apiToken, SERPSTAT_API_URL, DEFAULT_REQUEST_TIMEOUT);
     }
 
     /**
      * Constructor for custom API URL (for testing/mocking)
      */
     public SerpstatApiClient(String apiToken, String apiUrl) {
-        if (isTestEnvironment() && isProductionUrl(apiUrl)) {
-            throw new IllegalStateException("Test environment must not use production Serpstat API URL!");
-        }
-        this.apiToken = apiToken;
-        this.apiUrl = apiUrl;
-        this.requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-        this.httpClient = HttpClient.newBuilder().build();
-        this.cache = Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES).maximumSize(1000).build();
-        this.version = VersionUtils.getVersion();
-        this.objectMapper = new ObjectMapper();
-        this.rateLimiter = new RateLimiter(10);
+        this(apiToken, apiUrl, DEFAULT_REQUEST_TIMEOUT);
     }
 
     public SerpstatApiClient(String apiToken, String apiUrl, Duration requestTimeout) {
@@ -171,17 +151,5 @@ public class SerpstatApiClient {
         } catch (IOException | InterruptedException e) {
             throw new SerpstatApiException("Request failed: " + e.getMessage(), e);
         }
-    }
-
-    private static boolean isProductionUrl(String url) {
-        return url != null && url.startsWith("https://api.serpstat.com");
-    }
-
-    private static boolean isTestEnvironment() {
-        String env = System.getProperty("env");
-        if (env == null) env = System.getenv("ENV");
-        if (env == null) env = System.getenv("CI");
-        if (env == null) env = System.getenv("GITHUB_ACTIONS");
-        return env != null && (env.equalsIgnoreCase("test") || env.equalsIgnoreCase("ci") || env.equalsIgnoreCase("true"));
     }
 }
