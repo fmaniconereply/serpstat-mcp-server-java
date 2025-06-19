@@ -52,7 +52,7 @@ public class SerpstatApiClient {
         // Configure ObjectMapper for proper UTF-8 handling
         this.objectMapper = new ObjectMapper();
 
-        this.rateLimiter = new RateLimiter(10, Duration.ofSeconds(1));
+        this.rateLimiter = new RateLimiter(1, Duration.ofSeconds(1));
     }
 
     /**

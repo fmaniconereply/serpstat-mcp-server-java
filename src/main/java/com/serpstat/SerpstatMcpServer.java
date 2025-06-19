@@ -2,6 +2,7 @@
 package com.serpstat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.serpstat.domains.utils.VersionUtils;
 import io.modelcontextprotocol.server.McpServer;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.transport.StdioServerTransportProvider;
@@ -27,9 +28,17 @@ public class SerpstatMcpServer {
 
     public static void main(String[] args) {
 
-        String apiToken = System.getenv("SERPSTAT_API_TOKEN");
-        if (apiToken == null || apiToken.isEmpty()) {
-            System.err.println("Error: Environment variable SERPSTAT_API_TOKEN is not set. Check README.md for instructions.");
+        final String envName = "SERPSTAT_API_TOKEN";
+        String apiToken = null;
+
+        try {
+            apiToken = System.getenv(envName);
+            if (apiToken == null || apiToken.isEmpty()) {
+                System.err.printf("Error: Environment variable %s is not set or empty. Check README.md for instructions.%n", envName);
+                System.exit(1);
+            }
+        } catch (SecurityException e) {
+            System.err.printf("Error: Unable to access environment variable %s due to security restrictions.%n", envName);
             System.exit(1);
         }
 
@@ -57,11 +66,9 @@ public class SerpstatMcpServer {
 
             // Create and configure an MCP server
             this.mcpServer = McpServer.sync(transportProvider)
-                    .serverInfo("serpstat-mcp-server", "0.0.1")
+                    .serverInfo("serpstat-mcp-server", VersionUtils.getVersion())
                     .capabilities(ServerCapabilities.builder()
                             .tools(true)
-                            //.resources(false,false)
-                            //.prompts(false)
                             .logging()
                             .build())
                     .build();
