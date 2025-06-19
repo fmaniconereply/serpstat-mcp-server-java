@@ -32,7 +32,6 @@ public class ToolRegistry {
     private List<ToolProvider> initializeProviders() {
         List<ToolProvider> providers = new ArrayList<>();
 
-        // Регистрируем провайдеры по доменам
         providers.add(new DomainTools(apiClient));
         providers.add(new CompetitorsTools(apiClient));
         providers.add(new BacklinksTools(apiClient));

@@ -27,8 +27,8 @@ public class KeywordTools extends BaseToolHandler implements ToolProvider {
     public List<McpServerFeatures.SyncToolSpecification> getTools() {
         return List.of(
                 createGetKeywordsTool(),
-                createKeywordCompetitorsTool()
-                // Future tools can be added here
+                createKeywordCompetitorsTool(),
+                createGetRelatedKeywordsTool()
         );
     }
 
@@ -59,6 +59,50 @@ public class KeywordTools extends BaseToolHandler implements ToolProvider {
                 this::handleKeywordCompetitors
         );
     }
+
+    /**
+     * Create get related keywords tool specification
+     */
+    private McpServerFeatures.SyncToolSpecification createGetRelatedKeywordsTool() {
+        return new McpServerFeatures.SyncToolSpecification(
+                new Tool(
+                        "get_related_keywords",
+                        "Find semantically related keywords to expand content strategy. Returns keywords with search volume, cost per click, connection strength, difficulty scores and comprehensive semantic analysis. Each keyword costs 1 API credit, minimum 1 credit per request even for empty results. Perfect for content expansion and semantic SEO.",
+                        KeywordSchemas.GET_RELATED_KEYWORDS_SCHEMA
+                ),
+                this::handleGetRelatedKeywords
+        );
+    }
+
+    /**
+     * Handle get related keywords request
+     */
+    private CallToolResult handleGetRelatedKeywords(McpSyncServerExchange exchange, Map<String, Object> arguments) {
+        return handleToolCall(exchange, arguments, "getRelatedKeywords", (args) -> {
+            // Validation
+            RelatedKeywordsValidator.validateRelatedKeywordsRequest(args);
+
+            // Log request details
+            String keyword = (String) args.get("keyword");
+            String searchEngine = (String) args.get("se");
+            Integer page = (Integer) args.getOrDefault("page", 1);
+            Integer size = (Integer) args.getOrDefault("size", 100);
+            Boolean withIntents = (Boolean) args.getOrDefault("withIntents", false);
+
+            exchange.loggingNotification(
+                    LoggingMessageNotification.builder()
+                            .level(LoggingLevel.DEBUG)
+                            .logger("KeywordTools")
+                            .data(String.format("Researching related keywords for '%s' in %s (page %d, size %d, intents: %s)",
+                                    keyword, searchEngine, page, size, withIntents))
+                            .build()
+            );
+
+            // Call Serpstat API
+            return apiClient.callMethod("SerpstatKeywordProcedure.getRelatedKeywords", args);
+        });
+    }
+
 
     /**
      * Handle keyword competitors analysis request
@@ -123,6 +167,8 @@ public class KeywordTools extends BaseToolHandler implements ToolProvider {
         return switch (method) {
             case "SerpstatKeywordProcedure.getCompetitors" ->
                     KeywordCompetitorsResponseFormatter.format(response, arguments, objectMapper);
+            case "SerpstatKeywordProcedure.getRelatedKeywords" ->
+                    RelatedKeywordsResponseFormatter.format(response, arguments, objectMapper);
             default ->
                     KeywordResponseFormatter.format(response, arguments, objectMapper);
         };

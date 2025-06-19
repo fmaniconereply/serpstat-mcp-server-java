@@ -22,7 +22,6 @@ public class CompetitorsResponseFormatter {
         JsonNode resultNode = response.getResult();
 
         // Extract request parameters for context
-        @SuppressWarnings("unchecked")
         String requestedDomain = (String) arguments.get("domain");
         String searchEngine = (String) arguments.getOrDefault("se", "g_us");
 
@@ -31,12 +30,13 @@ public class CompetitorsResponseFormatter {
         formattedResponse.put("status", "success");
         formattedResponse.put("method", "SerpstatDomainProcedure.getDomainCompetitors");
         formattedResponse.put("search_engine", searchEngine);
-        // formattedResponse.put("requested_domains_count", requestedDomains.size());
+        formattedResponse.put("requested_domain", requestedDomain);
+
 
         // Process competitors data
         JsonNode dataArray = resultNode.get("data");
-        // Request spent minimum 1 credit per query if no data returned
-        int estimatedCost = 1;
+
+        int estimatedCost = 0;
         if (dataArray != null && dataArray.isArray()) {
             formattedResponse.put("found_competitors_count", dataArray.size());
             formattedResponse.set("competitors", dataArray);
@@ -70,9 +70,9 @@ public class CompetitorsResponseFormatter {
         // Add API metadata
         DomainResponseFormatter.createSummaryInfo(mapper, resultNode, formattedResponse);
 
-        // Calculate estimated cost (5 credits per competitor according to documentation)
+        // Add estimated credits used 1 credit per empty query or 1 * number of competitors
 
-        formattedResponse.put("estimated_credits_used", estimatedCost);
+        formattedResponse.put("estimated_credits_used", estimatedCost > 0 ? estimatedCost : 1);
 
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(formattedResponse);
     }
