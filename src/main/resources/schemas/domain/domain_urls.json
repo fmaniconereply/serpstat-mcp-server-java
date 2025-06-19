@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "domain": {
+      "type": "string",
+      "description": "Domain name to analyze",
+      "pattern": "^([a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,}$",
+      "minLength": 4,
+      "maxLength": 253
+    },
+    "se": {
+      "type": "string",
+      "description": "Search engine database ID",
+      "enum": [
+        "g_us", "g_uk", "g_au", "g_ca", "g_de",
+        "g_fr", "g_kz", "g_br", "g_mx", "g_es",
+        "g_it", "g_nl", "g_pl", "g_ua"
+      ],
+      "default": "g_us"
+    },
+    "filters": {
+      "type": "object",
+      "description": "URL filtering options",
+      "properties": {
+        "url_prefix": {
+          "type": "string",
+          "description": "Filter URLs that start with given prefix",
+          "maxLength": 500
+        },
+        "url_contain": {
+          "type": "string",
+          "description": "Filter URLs that contain specified substring",
+          "maxLength": 200
+        },
+        "url_not_contain": {
+          "type": "string",
+          "description": "Exclude URLs that contain specified substring",
+          "maxLength": 200
+        }
+      },
+      "additionalProperties": false
+    },
+    "sort": {
+      "type": "object",
+      "description": "Sort configuration",
+      "properties": {
+        "keywords": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "description": "Sort by number of keywords"
+        }
+      },
+      "additionalProperties": false
+    },
+    "page": {
+      "type": "integer",
+      "description": "Page number",
+      "minimum": 1,
+      "default": 1
+    },
+    "size": {
+      "type": "integer",
+      "description": "Number of results per page",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 100
+    }
+  },
+  "required": ["domain", "se"],
+  "additionalProperties": false
+}
