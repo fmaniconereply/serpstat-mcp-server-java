@@ -5,7 +5,6 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -140,41 +139,10 @@ class BaseToolHandlerTest {
         assertThat(getFirstContentAsString(result)).contains("Test formatted response");
         Mockito.verify(exchange, Mockito.atLeastOnce()).loggingNotification(Mockito.any());
     }
-
-    // =============================================================================
-    // handleToolCall Method Tests - Error Scenarios
-    // =============================================================================
-
-    // Remove or comment out duplicate and disabled test stubs for handleToolCall
-    // error scenarios
-    // =============================================================================
-    // handleToolCall Method Tests - Error Scenarios
-    // =============================================================================
-
-    // @Disabled("Not yet implemented")
-    // @Test
-    // @DisplayName("Should handle ValidationException correctly")
-    // void shouldHandleValidationExceptionCorrectly() {
-    // // ...stub...
-    // }
-
-    // @Disabled("Not yet implemented")
-    // @Test
-    // @DisplayName("Should handle SerpstatApiException correctly")
-    // void shouldHandleSerpstatApiExceptionCorrectly() {
-    // // ...stub...
-    // }
-
-    // @Disabled("Not yet implemented")
-    // @Test
-    // @DisplayName("Should handle unexpected exceptions correctly")
-    // void shouldHandleUnexpectedExceptionsCorrectly() {
-    // // ...stub...
-    // }
-
-    // Fix getContents() usage: use direct field access if Lombok is not present, or
-    // add a helper for test assertions
-    // Helper to extract string from CallToolResult content
+    /**
+     * Helper method to extract the first content as a string from CallToolResult.
+     * Returns null if result or content is empty.
+     */
     private static String getFirstContentAsString(CallToolResult result) {
         if (result == null) return null;
         if (result.content() != null && !result.content().isEmpty()) {
@@ -417,7 +385,6 @@ class BaseToolHandlerTest {
     @Test
     @DisplayName("Should handle large response data efficiently")
     void shouldHandleLargeResponseDataEfficiently() throws Exception {
-        TestableBaseToolHandler handler = new TestableBaseToolHandler(apiClient);
         McpSyncServerExchange exchange = Mockito.mock(McpSyncServerExchange.class);
         // Simulate large response
         String largeString = "x".repeat(100_000);
@@ -516,10 +483,6 @@ class BaseToolHandlerTest {
 
         @Override
         protected String formatResponse(SerpstatApiResponse response, Map<String, Object> arguments) throws Exception {
-            // TODO: Implement test-specific response formatting
-            // - Return simple formatted string for testing
-            // - Allow testing of formatResponse error scenarios
-            // - Make behavior configurable for different test scenarios
             return "Test formatted response";
         }
 
