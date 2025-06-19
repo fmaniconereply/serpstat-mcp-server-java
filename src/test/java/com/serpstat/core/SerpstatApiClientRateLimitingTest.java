@@ -37,7 +37,7 @@ class SerpstatApiClientRateLimitingTest {
     @BeforeEach
     void setUp() {
         String wireMockUrl = String.format("http://localhost:%d/v4/", wireMock.getPort());
-        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
+        client = new SerpstatApiClient(TEST_TOKEN, wireMockUrl);
         wireMock.resetAll();
 
         // Setup default successful response
@@ -140,7 +140,7 @@ class SerpstatApiClientRateLimitingTest {
 
     void shouldDelayRequestsExceedingLimit() throws Exception {
         // Create a new client for this test to isolate rate limiter
-        SerpstatApiClient isolatedClient = new TestableSerpstatApiClient(TEST_TOKEN,
+        SerpstatApiClient isolatedClient = new SerpstatApiClient(TEST_TOKEN,
                 String.format("http://localhost:%d/v4", wireMock.getPort()));
 
         for (int i = 0; i < 10; i++) {

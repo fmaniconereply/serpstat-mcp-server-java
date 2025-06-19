@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class SerpstatApiClientWireMockTest {
 
     private WireMockServer wireMockServer;
-    private TestableSerpstatApiClient client;
+    private SerpstatApiClient client;
     private static final int WIREMOCK_PORT = 8089;
 
     @BeforeEach
@@ -32,7 +32,8 @@ class SerpstatApiClientWireMockTest {
         WireMock.configureFor("localhost", WIREMOCK_PORT);
         
         // Create testable client that points to WireMock server
-        client = new TestableSerpstatApiClient("test-token", "http://localhost:" + WIREMOCK_PORT);
+        String wireMockUrl = String.format("http://localhost:%d/v4", WIREMOCK_PORT);
+        client = new SerpstatApiClient("test-token", wireMockUrl);
     }
 
     @AfterEach
@@ -178,22 +179,5 @@ class SerpstatApiClientWireMockTest {
         assertThat(response.getResult().get("keywords")).hasSize(2);
         assertThat(response.getResult().get("keywords").get(0).get("keyword").asText()).isEqualTo("example");
         assertThat(response.getResult().get("keywords").get(1).get("position").asInt()).isEqualTo(5);
-    }
-
-    /**
-     * Testable version of SerpstatApiClient that allows custom API URL
-     */
-    private static class TestableSerpstatApiClient extends SerpstatApiClient {
-        private final String customApiUrl;
-
-        public TestableSerpstatApiClient(String apiToken, String apiUrl) {
-            super(apiToken);
-            this.customApiUrl = apiUrl;
-        }
-
-        @Override
-        protected String getApiUrl() {
-            return customApiUrl + "/v4";
-        }
     }
 }

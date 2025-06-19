@@ -38,7 +38,7 @@ class SerpstatApiClientTest {
     @BeforeEach
     void setUp() {
         String wireMockUrl = String.format("http://localhost:%d/v4", wireMock.getPort());
-        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
+        client = new SerpstatApiClient(TEST_TOKEN, wireMockUrl);
         wireMock.resetAll();
     }
 
@@ -186,7 +186,7 @@ class SerpstatApiClientTest {
     @DisplayName("Should handle timeout correctly")
     void shouldHandleTimeoutCorrectly() throws Exception {
         Duration timeout = Duration.ofMillis(50);
-        client = new TestableSerpstatApiClient(TEST_TOKEN, String.format("http://localhost:%d/v4", wireMock.getPort()), timeout);
+        client = new SerpstatApiClient(TEST_TOKEN, String.format("http://localhost:%d/v4", wireMock.getPort()), timeout);
         wireMock.stubFor(post(anyUrl())
             .willReturn(aResponse()
                 .withFixedDelay(200)
@@ -412,15 +412,5 @@ class SerpstatApiClientTest {
             .withRequestBody(matchingJsonPath("$.params.string_param", equalTo("text")))
             .withRequestBody(matchingJsonPath("$.params.int_param", equalTo("123")))
             .withRequestBody(matchingJsonPath("$.params.boolean_param", equalTo("true"))));
-    }
-
-    static class TestableSerpstatApiClient extends SerpstatApiClient {
-        public TestableSerpstatApiClient(String token, String apiUrl) {
-            super(token, apiUrl);
-        }
-
-        public TestableSerpstatApiClient(String token, String apiUrl, Duration requestTimeout) {
-            super(token, apiUrl, requestTimeout);
-        }
     }
 }
