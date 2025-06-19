@@ -30,7 +30,7 @@ class SerpstatApiClientCacheTest {
     @BeforeEach
     void setUp() {
         String wireMockUrl = String.format("http://localhost:%d/v4/", wireMock.getPort());
-        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
+        client = new SerpstatApiClient(TEST_TOKEN, wireMockUrl);
         wireMock.resetAll();
         // Setup default successful response
         wireMock.stubFor(post(anyUrl())

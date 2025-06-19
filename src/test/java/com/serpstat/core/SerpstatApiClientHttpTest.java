@@ -33,23 +33,10 @@ class SerpstatApiClientHttpTest {
     private ObjectMapper objectMapper;
     private static final String TEST_TOKEN = "test-api-token";
 
-    // Testable client that overrides getApiUrl to use WireMock
-    static class TestableSerpstatApiClient extends SerpstatApiClient {
-        private final String apiUrl;
-        public TestableSerpstatApiClient(String token, String apiUrl) {
-            super(token);
-            this.apiUrl = apiUrl;
-        }
-        @Override
-        protected String getApiUrl() {
-            return apiUrl;
-        }
-    }
-
     @BeforeEach
     void setUp() {
-        String wireMockUrl = String.format("http://localhost:%d/v4", wireMock.getPort()); // Убираем лишний слэш
-        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
+        String wireMockUrl = String.format("http://localhost:%d/v4", wireMock.getPort());
+        client = new SerpstatApiClient(TEST_TOKEN, wireMockUrl);
         objectMapper = new ObjectMapper();
         wireMock.resetAll();
     }

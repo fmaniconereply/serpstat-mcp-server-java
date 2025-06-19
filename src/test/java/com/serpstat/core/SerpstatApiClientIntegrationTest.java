@@ -32,7 +32,7 @@ class SerpstatApiClientIntegrationTest {
     @BeforeEach
     void setUp() {
         String wireMockUrl = String.format("http://localhost:%d/v4", wireMock.getPort());
-        client = new TestableSerpstatApiClient(TEST_TOKEN, wireMockUrl);
+        client = new SerpstatApiClient(TEST_TOKEN, wireMockUrl);
         wireMock.resetAll();
     }
 

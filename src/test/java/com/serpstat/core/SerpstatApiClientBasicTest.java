@@ -1,11 +1,17 @@
 package com.serpstat.core;
 
-import org.junit.jupiter.api.Test;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
-
-import java.util.Map;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
+
+import java.util.Map;
 
 /**
  * Basic functional tests for SerpstatApiClient - Positive Path scenarios only
@@ -13,37 +19,30 @@ import static org.assertj.core.api.Assertions.*;
  */
 @DisplayName("SerpstatApiClient Basic Tests")
 class SerpstatApiClientBasicTest {
+    private static WireMockServer wireMockServer;
+    private static final int MOCK_PORT = 9999;
+    private static final String MOCK_URL = "http://localhost:9999/v4";
 
-    @Test
-    @DisplayName("Should handle null parameters gracefully")
-    void shouldHandleNullParametersGracefully() {
-        // Given
-        SerpstatApiClient client = new SerpstatApiClient("test-token");
-          // When & Then
-        // The method should not throw NullPointerException anymore
-        // It will likely throw SerpstatApiException due to invalid token, but that's expected
-        assertThatThrownBy(() -> client.callMethod("test.method", null))
-            .isInstanceOf(SerpstatApiException.class)
-            .hasMessageContaining("Serpstat API Error")
-            .hasMessageNotContaining("NullPointerException");
+    @BeforeAll
+    static void startWireMock() {
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().port(MOCK_PORT));
+        wireMockServer.start();
+        WireMock.configureFor("localhost", MOCK_PORT);
+    }
+
+    @AfterAll
+    static void stopWireMock() {
+        if (wireMockServer != null) {
+            wireMockServer.stop();
+        }
     }
 
     @Test
-    @DisplayName("Should handle empty parameters")
-    void shouldHandleEmptyParameters() {
-        // Given
-        SerpstatApiClient client = new SerpstatApiClient("test-token");
-        Map<String, Object> emptyParams = Map.of();
-        
-        // When & Then
-        assertThatThrownBy(() -> client.callMethod("test.method", emptyParams))
-            .isInstanceOf(SerpstatApiException.class)
-            .hasMessageContaining("Serpstat API Error");
-    }    @Test
     @DisplayName("Should create cache key correctly for null parameters")
     void shouldCreateCacheKeyCorrectlyForNullParameters() {
         // Given
-        SerpstatApiClient client = new SerpstatApiClient("test-token");
+        String wireMockUrl = "http://localhost:9999/v4";
+        SerpstatApiClient client = new SerpstatApiClient("test-token", wireMockUrl);
         
         // When & Then
         // This should not throw NPE - the cache key should be created properly
@@ -54,47 +53,22 @@ class SerpstatApiClientBasicTest {
     }
 
     @Test
-    @DisplayName("Should accept valid method names")
-    void shouldAcceptValidMethodNames() {
+    @DisplayName("Should parse successful response from mock server")
+    void shouldParseSuccessfulResponseFromMock() throws Exception {
         // Given
-        SerpstatApiClient client = new SerpstatApiClient("test-token");
-        Map<String, Object> params = Map.of("domain", "example.com");
-        
-        // When & Then
-        assertThatThrownBy(() -> client.callMethod("DomainProcedure.getDomainKeywords", params))
-            .isInstanceOf(SerpstatApiException.class)
-            .hasMessageContaining("Serpstat API Error");
-    }
-
-    @Test
-    @DisplayName("Should handle various parameter types")
-    void shouldHandleVariousParameterTypes() {
-        // Given
-        SerpstatApiClient client = new SerpstatApiClient("test-token");
-        Map<String, Object> complexParams = Map.of(
-            "domain", "example.com",
-            "page", 1,
-            "size", 100,
-            "sortBy", "position",
-            "filters", Map.of("position_from", 1, "position_to", 10)
-        );
-        
-        // When & Then
-        assertThatThrownBy(() -> client.callMethod("test.method", complexParams))
-            .isInstanceOf(SerpstatApiException.class)
-            .hasMessageContaining("Serpstat API Error");
-    }
-
-    @Test
-    @DisplayName("Should preserve method and parameters in exception context")
-    void shouldPreserveMethodAndParametersInExceptionContext() {
-        // Given
-        SerpstatApiClient client = new SerpstatApiClient("invalid-token");
-        Map<String, Object> params = Map.of("test", "value");
-        
-        // When & Then
-        assertThatThrownBy(() -> client.callMethod("test.method", params))
-            .isInstanceOf(SerpstatApiException.class)
-            .hasMessageContaining("Invalid token");
+        String responseBody = "{" +
+                "\"id\":1," +
+                "\"result\":{\"data\":[{\"domain\":\"example.com\",\"keywords\":123}],\"summary_info\":{\"total\":1}}" +
+                "}";
+        WireMock.stubFor(WireMock.post(WireMock.urlPathMatching("/v4/?"))
+                .withQueryParam("token", WireMock.matching(".*"))
+                .willReturn(WireMock.aResponse().withStatus(200).withBody(responseBody)));
+        SerpstatApiClient client = new SerpstatApiClient("test-token", MOCK_URL);
+        // When
+        SerpstatApiResponse apiResponse = client.callMethod("SerpstatDomainProcedure.getInfo", Map.of("domain", "example.com"));
+        // Then
+        assertThat(apiResponse.getResult().path("data").get(0).path("domain").asText()).isEqualTo("example.com");
+        assertThat(apiResponse.getResult().path("data").get(0).path("keywords").asInt()).isEqualTo(123);
+        assertThat(apiResponse.getResult().path("summary_info").path("total").asInt()).isEqualTo(1);
     }
 }

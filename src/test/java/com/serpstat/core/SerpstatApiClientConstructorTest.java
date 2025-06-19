@@ -19,10 +19,9 @@ class SerpstatApiClientConstructorTest {
     void shouldCreateClientWithValidToken() {
         // Given
         String validToken = "test-api-token-123";
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client = new SerpstatApiClient(validToken);
-
+        SerpstatApiClient client = new SerpstatApiClient(validToken, wireMockUrl);
         // Then
         assertThat(client).isNotNull();
         assertThat(client).isInstanceOf(SerpstatApiClient.class);
@@ -33,10 +32,9 @@ class SerpstatApiClientConstructorTest {
     void shouldInitializeDefaultConfiguration() {
         // Given
         String token = "test-token";
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client = new SerpstatApiClient(token);
-
+        SerpstatApiClient client = new SerpstatApiClient(token, wireMockUrl);
         // Then
         assertThat(client).isNotNull();
         // Note: These are implicit tests since fields are private
@@ -49,10 +47,9 @@ class SerpstatApiClientConstructorTest {
     void shouldAcceptLongToken() {
         // Given
         String longToken = "a".repeat(500); // Very long token
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client = new SerpstatApiClient(longToken);
-
+        SerpstatApiClient client = new SerpstatApiClient(longToken, wireMockUrl);
         // Then
         assertThat(client).isNotNull();
     }
@@ -69,9 +66,9 @@ class SerpstatApiClientConstructorTest {
     })
     @DisplayName("Should accept tokens with special characters")
     void shouldAcceptTokenWithSpecialCharacters(String specialToken) {
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client = new SerpstatApiClient(specialToken);
-
+        SerpstatApiClient client = new SerpstatApiClient(specialToken, wireMockUrl);
         // Then
         assertThat(client).isNotNull();
     }
@@ -81,10 +78,9 @@ class SerpstatApiClientConstructorTest {
     void shouldCreateClientWithEmptyToken() {
         // Given
         String emptyToken = "";
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client = new SerpstatApiClient(emptyToken);
-
+        SerpstatApiClient client = new SerpstatApiClient(emptyToken, wireMockUrl);
         // Then
         assertThat(client).isNotNull();
         // Note: Constructor doesn't validate token - this is expected behavior
@@ -95,10 +91,10 @@ class SerpstatApiClientConstructorTest {
     void shouldCreateClientWithNullToken() {
         // Given
         String nullToken = null;
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When & Then
         // Constructor accepts null token (validation happens later during API calls)
-        assertThatCode(() -> new SerpstatApiClient(nullToken))
+        assertThatCode(() -> new SerpstatApiClient(nullToken, wireMockUrl))
             .doesNotThrowAnyException();
     }
 
@@ -107,10 +103,9 @@ class SerpstatApiClientConstructorTest {
     void shouldCreateClientWithWhitespaceToken() {
         // Given
         String whitespaceToken = "   \t\n   ";
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client = new SerpstatApiClient(whitespaceToken);
-
+        SerpstatApiClient client = new SerpstatApiClient(whitespaceToken, wireMockUrl);
         // Then
         assertThat(client).isNotNull();
     }
@@ -121,11 +116,10 @@ class SerpstatApiClientConstructorTest {
         // Given
         String token1 = "token-1";
         String token2 = "token-2";
-
+        String wireMockUrl = "http://localhost:9999/v4";
         // When
-        SerpstatApiClient client1 = new SerpstatApiClient(token1);
-        SerpstatApiClient client2 = new SerpstatApiClient(token2);
-
+        SerpstatApiClient client1 = new SerpstatApiClient(token1, wireMockUrl);
+        SerpstatApiClient client2 = new SerpstatApiClient(token2, wireMockUrl);
         // Then
         assertThat(client1).isNotNull();
         assertThat(client2).isNotNull();
