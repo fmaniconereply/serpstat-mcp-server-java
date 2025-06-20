@@ -25,11 +25,9 @@ import static org.assertj.core.api.Assertions.*;
 public class ToolRegistryTest {
     static McpServerFeatures.SyncToolSpecification createMockTool(String name) {
         // Use the correct constructor for McpSchema.Tool (name, description, schema)
-        McpSchema.Tool tool = new McpSchema.Tool(name, "desc", null);
-        // Use Object for exchange since it's not used in the test logic
-        @SuppressWarnings("unchecked")
+        McpSchema.Tool tool = new McpSchema.Tool(name, "desc", (McpSchema.JsonSchema) null);
         BiFunction<Object, Map<String, Object>, McpSchema.CallToolResult> call =
-                (exchange, args) -> new McpSchema.CallToolResult(null, null, null, null, null);
+                (exchange, args) -> new McpSchema.CallToolResult("result text", false);
         // Cast to the required type for SyncToolSpecification
         return new McpServerFeatures.SyncToolSpecification(tool, (BiFunction) call);
     }
