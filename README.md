@@ -54,7 +54,7 @@ This is alpha release v0.0.2.
    🔍 MCP Inspector is up and running at http://127.0.0.1:6274 🚀
    ```
    
-## Integration into Claude Desktop
+## Integration into Claude Desktop for Linux
 
 - Click the menu icon (three lines, "burger") in the top right corner of Claude Desktop to open **Settings**.
 - In the menu, select **General → Claude Settings → Configure** (this opens your profile settings).
@@ -76,6 +76,30 @@ This is alpha release v0.0.2.
    }
 }
 ```
+
+### Integration into Claude Desktop for Windows
+- [Follow the steps in Serpstat MCP Server Installation Guide for Windows](https://github.com/vitos73/serpstat-mcp-server-java/blob/main/doc/setup_instruction_win.md)
+- TL;DR config for Claude Desktop is a little bit different
+
+   ```json
+   {
+      "mcpServers": {
+         "serpstat": {
+            "command": "java",
+            "args": [
+               "-Dfile.encoding=UTF-8",
+               "-Dconsole.encoding=UTF-8",
+               "-jar",
+               "c:/serpstat_mcp/serpstat-mcp-server-java-0.0.2.jar"
+            ],
+            "env": {
+               "SERPSTAT_API_TOKEN": "PLACE_YOUR_TOKEN_HERE",
+               "JAVA_TOOL_OPTIONS": "-Dfile.encoding=UTF-8"
+            }
+         }
+      }
+   }
+   ```
 
 ## Make The First Report!
  Try prompt ```Would you mind to make me a comprehensive SEO report for the netpeak.bg with Serpstat?```
