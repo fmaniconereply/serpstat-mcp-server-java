@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.*;
  * - Duplicate registration handling
  * - Error handling for missing tools
  * - Thread safety (concurrent registration/lookup)
+ * - Multiple tools registration
  */
 public class ToolRegistryTest {
     static McpServerFeatures.SyncToolSpecification createMockTool(String name) {
