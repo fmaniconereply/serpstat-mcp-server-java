@@ -63,24 +63,23 @@ You need a paid Serpstat subscription (Team plan or higher) to use the API.
 
 1. **Log into Serpstat**:
     - Go to https://serpstat.com/users/profile/
-    - Sign in to your account
 
 2. **Copy your API token**:
     - Look for the "API Token" section
     - Copy the long string of characters
-    - **Important**: Keep this token safe - it's like a password!
+    - **Important**: Keep this token safe—it's like a password!
 
-> **Don't have a Serpstat subscription?** You'll need to purchase one at https://serpstat.com/pricing/
+> **Don't have a Serpstat subscription?** You'll need to purchase one at https://serpstat.com/page/pricing-plans/
 
 ## Step 5: Upgrade Your Claude Subscription
 
-The free Claude plan has very limited usage - you'll need Claude Pro or Teams to generate full SEO reports.
+The free Claude plan has very limited usage — you'll need Claude Pro or Teams to generate full SEO reports.
 
 1. **Upgrade Claude**:
     - In Claude Desktop, look for subscription options
     - Choose Claude Pro ($20/month) or Claude Teams
     - This gives you much higher usage limits
-
+2. Actually, the free plan is only enough for one comprehensive report. 
 ## Step 6: Configure Claude Desktop
 
 Now we'll tell Claude how to connect to the Serpstat server.
@@ -117,7 +116,7 @@ Now we'll tell Claude how to connect to the Serpstat server.
 
 3. **Save and restart**:
     - Save the config file
-    - Close Claude Desktop completely
+    - Close Claude Desktop completely. Look for the hidden tray icon.
     - Open Claude Desktop again
 
 ## Step 7: Test the Connection
@@ -134,7 +133,7 @@ Let's make sure everything is working properly.
 
 ## Step 8: Create Your First SEO Report!
 
-Now for the fun part - let's generate your first comprehensive SEO report!
+Now for the fun part—let's generate your first comprehensive SEO report!
 
 ### Example Prompts to Try:
 
@@ -152,13 +151,13 @@ Create a comprehensive SEO report for netpeak.bg using Serpstat. Include:
 **For competitive research:**
 ```
 I want to analyze the SEO landscape for e-commerce websites selling shoes. 
-Use Serpstat to compare nike.com, adidas.com, and puma.com. 
+Use Serpstat to compare yoox.com, laredoute.com, and .zara.com. 
 Show me their organic performance, top keywords, and opportunities.
 ```
 
 **For keyword research:**
 ```
-Help me build a content strategy around "digital marketing" using Serpstat. 
+Help me build a content strategy around "digital marketing" using Serpstat in UK market. 
 Find related keywords, analyze competition levels, and suggest 
 which keywords I should target first.
 ```
