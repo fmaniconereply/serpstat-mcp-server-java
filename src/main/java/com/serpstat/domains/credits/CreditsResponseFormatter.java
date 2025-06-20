@@ -48,18 +48,16 @@ public class CreditsResponseFormatter {
 
             if (maxLines > 0) {
                 double usagePercentage = (double) usedLines / maxLines * 100.0;
-                usage.put("usage_percentage", Math.round(usagePercentage * 100.0) / 100.0);
-
-                // Usage status
+                usage.put("usage_percentage", Math.round(usagePercentage * 100.0) / 100.0);                // Usage status
                 String usageStatus;
                 String statusIcon;
-                if (usagePercentage > 95) {
+                if (usagePercentage >= 95) {
                     usageStatus = "CRITICAL";
                     statusIcon = "🔴";
-                } else if (usagePercentage > 90) {
+                } else if (usagePercentage >= 90) {
                     usageStatus = "HIGH";
                     statusIcon = "🟠";
-                } else if (usagePercentage > 75) {
+                } else if (usagePercentage >= 75) {
                     usageStatus = "MODERATE";
                     statusIcon = "🟡";
                 } else {
@@ -89,12 +87,10 @@ public class CreditsResponseFormatter {
                 recommendations.put("estimated_keyword_researches", leftLines);
 
                 // Usage recommendations
-                ObjectNode tips = mapper.createObjectNode();
-
-                if (leftLines < 100) {
+                ObjectNode tips = mapper.createObjectNode();                if (leftLines < 100) {
                     tips.put("priority", "HIGH");
                     tips.put("message", "Very low credits remaining. Consider upgrading plan or optimizing usage.");
-                } else if (leftLines < 1000) {
+                } else if (leftLines <= 1000) {
                     tips.put("priority", "MEDIUM");
                     tips.put("message", "Credits running low. Monitor usage carefully.");
                 } else {
