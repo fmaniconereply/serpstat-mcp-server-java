@@ -14,19 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for DomainValidator class
- * 
- * Implementation status:
- * - 3 critical tests implemented (domains info validation, domain keywords validation, domain pattern validation)
- * - Other tests disabled to prevent build failures
- * - TODO: Implement remaining tests as needed
+ *
+ * Tests domain info request validation, domain keywords request validation,
  */
 @DisplayName("DomainValidator Tests")
 class DomainValidatorTest {
-
-    // ================================
-    // IMPLEMENTED TESTS (3 most critical)
-    // ================================
-
     @Test
     @DisplayName("Test domains info request validation - valid and invalid cases")
     void testValidateDomainsInfoRequest() {
@@ -34,27 +26,27 @@ class DomainValidatorTest {
         Map<String, Object> validArgs = new HashMap<>();
         validArgs.put("domains", Arrays.asList("example.com", "test.org"));
         validArgs.put("se", "g_us");
-        
+
         assertDoesNotThrow(() -> DomainValidator.validateDomainsInfoRequest(validArgs),
-                           "Valid domains info request should not throw exception");
-        
+                "Valid domains info request should not throw exception");
+
         // Test null domains
         Map<String, Object> nullDomainsArgs = new HashMap<>();
         nullDomainsArgs.put("se", "g_us");
-        
+
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(nullDomainsArgs));
         assertEquals("Parameter 'domains' is required", exception.getMessage());
-        
+
         // Test empty domains array
         Map<String, Object> emptyDomainsArgs = new HashMap<>();
         emptyDomainsArgs.put("domains", Arrays.asList());
         emptyDomainsArgs.put("se", "g_us");
-        
+
         exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(emptyDomainsArgs));
         assertEquals("Parameter 'domains' cannot be empty", exception.getMessage());
-        
+
         // Test too many domains (> 100)
         Map<String, Object> tooManyDomainsArgs = new HashMap<>();
         List<String> manyDomains = new java.util.ArrayList<>();
@@ -63,16 +55,16 @@ class DomainValidatorTest {
         }
         tooManyDomainsArgs.put("domains", manyDomains);
         tooManyDomainsArgs.put("se", "g_us");
-        
+
         exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(tooManyDomainsArgs));
         assertEquals("Maximum 100 domains allowed per request", exception.getMessage());
-        
+
         // Test invalid domain format
         Map<String, Object> invalidDomainArgs = new HashMap<>();
         invalidDomainArgs.put("domains", Arrays.asList("invalid-domain"));
         invalidDomainArgs.put("se", "g_us");
-        
+
         exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(invalidDomainArgs));
         assertTrue(exception.getMessage().contains("Invalid domain format"));
@@ -87,34 +79,34 @@ class DomainValidatorTest {
         validArgs.put("se", "g_us");
         validArgs.put("page", 1);
         validArgs.put("size", 100);
-        
+
         assertDoesNotThrow(() -> DomainValidator.validateDomainKeywordsRequest(validArgs),
-                           "Valid domain keywords request should not throw exception");
-        
+                "Valid domain keywords request should not throw exception");
+
         // Test invalid domain
         Map<String, Object> invalidDomainArgs = new HashMap<>();
         invalidDomainArgs.put("domain", "invalid");
         invalidDomainArgs.put("se", "g_us");
-        
+
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainKeywordsRequest(invalidDomainArgs));
         assertTrue(exception.getMessage().contains("Invalid domain format"));
-        
+
         // Test valid URL parameter
         Map<String, Object> validUrlArgs = new HashMap<>();
         validUrlArgs.put("domain", "example.com");
         validUrlArgs.put("se", "g_us");
         validUrlArgs.put("url", "https://example.com/page");
-        
+
         assertDoesNotThrow(() -> DomainValidator.validateDomainKeywordsRequest(validUrlArgs),
-                           "Valid URL parameter should not throw exception");
-        
+                "Valid URL parameter should not throw exception");
+
         // Test invalid URL parameter
         Map<String, Object> invalidUrlArgs = new HashMap<>();
         invalidUrlArgs.put("domain", "example.com");
         invalidUrlArgs.put("se", "g_us");
         invalidUrlArgs.put("url", "invalid-url");
-        
+
         exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainKeywordsRequest(invalidUrlArgs));
         assertTrue(exception.getMessage().contains("must be a valid HTTP/HTTPS URL"));
@@ -127,39 +119,39 @@ class DomainValidatorTest {
         Map<String, Object> args = new HashMap<>();
         args.put("domains", Arrays.asList("EXAMPLE.COM", "  test.org  ", "sub.Domain.NET"));
         args.put("se", "g_us");
-        
+
         assertDoesNotThrow(() -> DomainValidator.validateDomainsInfoRequest(args));
-        
+
         // Verify domains were normalized to lowercase and trimmed
         @SuppressWarnings("unchecked")
         List<String> normalizedDomains = (List<String>) args.get("domains");
         assertEquals("example.com", normalizedDomains.get(0));
         assertEquals("test.org", normalizedDomains.get(1));
         assertEquals("sub.domain.net", normalizedDomains.get(2));
-        
+
         // Test duplicate domains detection
         Map<String, Object> duplicateArgs = new HashMap<>();
         duplicateArgs.put("domains", Arrays.asList("example.com", "example.com"));
         duplicateArgs.put("se", "g_us");
-        
+
         ValidationException exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(duplicateArgs));
         assertEquals("Duplicate domains are not allowed", exception.getMessage());
-        
+
         // Test null domain in array
         Map<String, Object> nullDomainArgs = new HashMap<>();
         nullDomainArgs.put("domains", Arrays.asList("example.com", null));
         nullDomainArgs.put("se", "g_us");
-        
+
         exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(nullDomainArgs));
         assertTrue(exception.getMessage().contains("Domain at index 1 is empty"));
-        
+
         // Test empty domain in array
         Map<String, Object> emptyDomainArgs = new HashMap<>();
         emptyDomainArgs.put("domains", Arrays.asList("example.com", ""));
         emptyDomainArgs.put("se", "g_us");
-        
+
         exception = assertThrows(ValidationException.class,
                 () -> DomainValidator.validateDomainsInfoRequest(emptyDomainArgs));
         assertTrue(exception.getMessage().contains("Domain at index 1 is empty"));
@@ -174,21 +166,30 @@ class DomainValidatorTest {
     @DisplayName("Test validate domains info request with invalid input")
     void testValidateDomainsInfoRequestInvalid() {
         // TODO: Implement test for invalid domains info request validation
-        // - Test with null domains parameter -> ValidationException("Parameter 'domains' is required")
-        // - Test with empty domains array -> ValidationException("Parameter 'domains' cannot be empty")
-        // - Test with > 100 domains -> ValidationException("Maximum 100 domains allowed per request")
-        // - Test with invalid domain format -> ValidationException with domain pattern message
-        // - Test with null domain in array -> ValidationException("Domain at index X is empty")
+        // - Test with null domains parameter -> ValidationException("Parameter
+        // 'domains' is required")
+        // - Test with empty domains array -> ValidationException("Parameter 'domains'
+        // cannot be empty")
+        // - Test with > 100 domains -> ValidationException("Maximum 100 domains allowed
+        // per request")
+        // - Test with invalid domain format -> ValidationException with domain pattern
+        // message
+        // - Test with null domain in array -> ValidationException("Domain at index X is
+        // empty")
         throw new RuntimeException("TODO: Implement validateDomainsInfoRequest invalid input test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement validateRegionsCountRequest test")
     @DisplayName("Test validate regions count request")
     void testValidateRegionsCountRequest() {
         // TODO: Implement test for regions count request validation
         // - Test with valid domain parameter
-        // - Test with valid sort options: "keywords_count", "country_name_en", "db_name"
+        // - Test with valid sort options: "keywords_count", "country_name_en",
+        // "db_name"
         // - Test with valid order options: "asc", "desc"
-        // - Test with missing domain -> ValidationException("Parameter 'domain' is required")
+        // - Test with missing domain -> ValidationException("Parameter 'domain' is
+        // required")
         // - Test with invalid domain format -> ValidationException with pattern message
         // - Test with invalid sort option -> ValidationException with allowed values
         throw new RuntimeException("TODO: Implement validateRegionsCountRequest test");
@@ -208,7 +209,9 @@ class DomainValidatorTest {
         // - Test invalid domain -> ValidationException
         // - Test invalid pagination values -> ValidationException
         throw new RuntimeException("TODO: Implement validateDomainKeywordsRequest test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement validateDomainUrlsRequest test")
     @DisplayName("Test validate domain URLs request")
     void testValidateDomainUrlsRequest() {
@@ -221,7 +224,9 @@ class DomainValidatorTest {
         // - Test with invalid pagination -> ValidationException
         // - Test with invalid filter values -> ValidationException
         throw new RuntimeException("TODO: Implement validateDomainUrlsRequest test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement domain pattern validation test")
     @DisplayName("Test domain pattern validation")
     void testDomainPatternValidation() {
@@ -232,7 +237,9 @@ class DomainValidatorTest {
         // - Test that DOMAIN_PATTERN is properly applied
         // - Verify ValidationException messages for invalid patterns
         throw new RuntimeException("TODO: Implement domain pattern validation test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement search engine validation test")
     @DisplayName("Test search engine validation")
     void testSearchEngineValidation() {
@@ -243,7 +250,9 @@ class DomainValidatorTest {
         // - Test case sensitivity
         // - Verify allowed search engine constants
         throw new RuntimeException("TODO: Implement search engine validation test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement pagination validation test")
     @DisplayName("Test pagination validation")
     void testPaginationValidation() {
@@ -254,7 +263,9 @@ class DomainValidatorTest {
         // - Test invalid size values: 0, > 1000 -> ValidationException
         // - Test default values handling
         throw new RuntimeException("TODO: Implement pagination validation test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement filter validation test")
     @DisplayName("Test filter validation")
     void testFilterValidation() {
@@ -265,7 +276,9 @@ class DomainValidatorTest {
         // - Test filter combination validation
         // - Test invalid filter values -> ValidationException
         throw new RuntimeException("TODO: Implement filter validation test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement ValidationUtils integration test")
     @DisplayName("Test ValidationUtils integration")
     void testValidationUtilsIntegration() {
@@ -275,7 +288,9 @@ class DomainValidatorTest {
         // - Test error message consistency
         // - Test validation helper methods
         throw new RuntimeException("TODO: Implement ValidationUtils integration test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement error message quality test")
     @DisplayName("Test error message quality")
     void testErrorMessageQuality() {
@@ -286,7 +301,9 @@ class DomainValidatorTest {
         // - Test internationalization considerations
         // - Test error message consistency across methods
         throw new RuntimeException("TODO: Implement error message quality test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement boundary conditions test")
     @DisplayName("Test boundary conditions")
     void testBoundaryConditions() {
@@ -297,7 +314,9 @@ class DomainValidatorTest {
         // - Test special characters in domain names
         // - Test Unicode domain names (IDN)
         throw new RuntimeException("TODO: Implement boundary conditions test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement performance test")
     @DisplayName("Test performance with large inputs")
     void testPerformanceWithLargeInputs() {
@@ -308,7 +327,9 @@ class DomainValidatorTest {
         // - Test validation time complexity
         // - Ensure validation doesn't become bottleneck
         throw new RuntimeException("TODO: Implement performance test");
-    }    @Test
+    }
+
+    @Test
     @Disabled("TODO: Implement thread safety test")
     @DisplayName("Test thread safety")
     void testThreadSafety() {
