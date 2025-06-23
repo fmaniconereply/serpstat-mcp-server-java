@@ -22,11 +22,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for DomainUniqueKeywordsResponseFormatter class
  * 
- * Implementation status:
- * - 3 critical tests implemented (basic formatting, analytics calculation,
- * competitive analysis)
- * - Other tests disabled to prevent build failures
- * - TODO: Implement remaining tests as needed
+ * Tests the formatting of unique keywords response from Serpstat API,
  */
 @DisplayName("DomainUniqueKeywordsResponseFormatter Tests")
 class DomainUniqueKeywordsResponseFormatterTest {
@@ -336,10 +332,6 @@ class DomainUniqueKeywordsResponseFormatterTest {
             assertTrue(analytics.isObject(), "Analytics should be an object");
         }
     }
-
-    // ================================
-    // DISABLED TESTS (TODO: Implement later)
-    // ================================
 
     @Test
     @Disabled("TODO: Implement getDomainsUniqKeywords response test")

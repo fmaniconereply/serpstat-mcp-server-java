@@ -13,19 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for DomainUniqueKeywordsValidator class
- * 
- * Implementation status:
- * - 3 critical tests implemented (basic validation, domains parameter
- * validation, competitive analysis validation)
- * - Other tests disabled to prevent build failures
- * - TODO: Implement remaining tests as needed
+ * Tests validation of domains unique keywords requests,
+ * including parameter validation, normalization, and error handling.
  */
 @DisplayName("DomainUniqueKeywordsValidator Tests")
 class DomainUniqueKeywordsValidatorTest {
-
-    // ================================
-    // IMPLEMENTED TESTS (3 most critical)
-    // ================================
 
     @Test
     @DisplayName("Test domains unique keywords request validation - valid and invalid cases")

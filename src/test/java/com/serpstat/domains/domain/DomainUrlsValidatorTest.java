@@ -19,9 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for DomainUrlsValidator class
- * 
- * Implementation status:
- * - Validates domain URLs requests with various parameters
+ * Tests domain URLs request validation, domain parameter normalization,
+ * and URL filters validation.
  */
 @DisplayName("DomainUrlsValidator Tests")
 class DomainUrlsValidatorTest {

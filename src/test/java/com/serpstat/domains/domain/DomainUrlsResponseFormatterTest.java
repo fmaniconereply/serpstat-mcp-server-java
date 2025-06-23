@@ -20,12 +20,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * Unit tests for DomainUrlsResponseFormatter class
- * 
- * Implementation status:
- * - 3 critical tests implemented (basic formatting, keyword analytics, URL
- * pattern analysis)
- * - Other tests disabled to prevent build failures
- * - TODO: Implement remaining tests as needed
+    * Tests the formatting of domain URLs responses from Serpstat API,
  */
 @DisplayName("DomainUrlsResponseFormatter Tests")
 class DomainUrlsResponseFormatterTest {
@@ -255,11 +250,7 @@ class DomainUrlsResponseFormatterTest {
             assertTrue(urls.size() >= 3, "Should contain all test URLs");
         }
     }
-
-    // ================================
-    // DISABLED TESTS (TODO: Implement later)
-    // ================================
-
+    
     @Test
     @Disabled("TODO: Implement getDomainUrls response test")
     @DisplayName("Test format domain URLs response")

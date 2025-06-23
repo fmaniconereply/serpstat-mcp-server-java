@@ -18,9 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for CreditsTools class
- * 
- * TODO: These are placeholder tests that need to be implemented
- * Currently they throw exceptions to indicate that proper testing is required
+ * Tests inheritance from BaseToolHandler,
+ * implementation of ToolProvider interface,
  */
 @DisplayName("CreditsTools Tests")
 class CreditsToolsTest {
