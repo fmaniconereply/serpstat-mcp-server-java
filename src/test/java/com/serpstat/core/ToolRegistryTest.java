@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.*;
  * - Multiple tools registration
  */
 public class ToolRegistryTest {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     static McpServerFeatures.SyncToolSpecification createMockTool(String name) {
         // Use the correct constructor for McpSchema.Tool (name, description, schema)
         McpSchema.Tool tool = new McpSchema.Tool(name, "desc", (McpSchema.JsonSchema) null);
