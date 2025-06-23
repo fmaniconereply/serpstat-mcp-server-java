@@ -7,7 +7,7 @@ public class SearchEngines {
             "g_af", "g_al", "g_dz", "g_as", "g_ad", "g_ao", "g_ai", "g_ag", "g_ar", "g_am", "g_aw", "g_au", "g_at", "g_az",
             "g_bh", "g_bd", "g_bb", "g_by", "g_be", "g_bz", "g_bj", "g_bm", "g_bt", "g_bo", "g_ba", "g_bw", "g_br", "g_io",
             "g_vg", "g_bn", "g_bg", "g_bf", "g_bi", "g_kh", "g_cm", "g_ca", "g_cv", "g_ky", "g_cf", "g_td", "g_cl", "g_cn",
-            "g_cx", "g_сс", "g_co", "g_km", "g_ck", "g_cr", "g_ci", "g_hr", "g_cw", "g_cy", "g_cz", "g_cd", "g_dk", "g_dj",
+            "g_cx", "g_cc", "g_co", "g_km", "g_ck", "g_cr", "g_ci", "g_hr", "g_cw", "g_cy", "g_cz", "g_cd", "g_dk", "g_dj",
             "g_dm", "g_do", "g_ec", "g_eg", "g_sv", "g_gq", "g_er", "g_ee", "g_et", "g_fk", "g_fo", "g_fm", "g_fj", "g_fi",
             "g_fr", "g_gf", "g_pf", "g_ga", "g_ge", "g_de", "g_gh", "g_gi", "g_gr", "g_gl", "g_gd", "g_gp", "g_gu", "g_gt",
             "g_gg", "g_gn", "g_gw", "g_gy", "g_ht", "g_hn", "g_hk", "g_hu", "g_is", "g_in", "g_id", "g_iq", "g_ie", "g_im",
