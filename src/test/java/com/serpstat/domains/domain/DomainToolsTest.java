@@ -34,12 +34,8 @@ import static org.mockito.ArgumentMatchers.eq;
 
 /**
  * Unit tests for DomainTools class
- * 
- * Implementation status:
- * - 3 critical tests implemented (tool provider, constructor, tool
- * specifications)
- * - Other tests disabled to prevent build failures
- * - TODO: Implement remaining tests as needed
+ * Tests inheritance from BaseToolHandler,
+ * implementation of ToolProvider interface,
  */
 @DisplayName("DomainTools Tests")
 class DomainToolsTest {
