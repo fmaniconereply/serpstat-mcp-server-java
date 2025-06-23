@@ -128,12 +128,7 @@ class DomainKeywordTest {
             }
         }
         return false;
-    }
-
-    // ================================
-    // DISABLED TESTS (TODO: Implement later)
-    // ================================    
-    @Test
+    }    @Test
     @DisplayName("Test keyword intent classification")
     void testKeywordIntentClassification() {
         // Test informational intent keywords

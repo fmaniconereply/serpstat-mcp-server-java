@@ -193,13 +193,7 @@ class DomainUniqueKeywordTest {
             }
         }
         return count;
-    }
-
-    // ================================
-    // DISABLED TESTS (TODO: Implement later)
-    // ================================
-    
-    @Test
+    }    @Test
     @DisplayName("Test Lombok annotations functionality")
     void testLombokAnnotations() {
         // Test Lombok-style data structure simulation for DomainUniqueKeyword

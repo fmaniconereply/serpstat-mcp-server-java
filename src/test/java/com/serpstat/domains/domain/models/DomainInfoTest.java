@@ -108,11 +108,7 @@ class DomainInfoTest {
     
     private String normalizeDomain(String domain) {
         return domain == null ? null : domain.trim().toLowerCase();
-    }
-
-    // ================================
-    // DISABLED TESTS (TODO: Implement later)
-    // ================================    @Test
+    }    @Test
     @DisplayName("Test DomainInfo object creation with no args constructor")
     void testNoArgsConstructor() {
         // Test creating DomainInfo object using reflection (since actual class may not exist)
