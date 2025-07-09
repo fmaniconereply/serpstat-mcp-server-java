@@ -46,7 +46,7 @@ The Serpstat MCP Server needs Java to run. Don't worry - it's free and safe!
 ## Step 3: Download Serpstat MCP Server
 
 1. **Get the latest version**:
-    - Go to: https://github.com/vitos73/serpstat-mcp-server-java/releases
+    - Go to: https://github.com/SerpstatGlobal/serpstat-mcp-server-java/releases
     - Look for the latest release (currently v0.0.2)
     - Download the file `serpstat-mcp-server-java-0.0.2.jar`
 
@@ -178,7 +178,7 @@ which keywords I should target first.
 
 ## Getting Help
 
-- Check the project repository: https://github.com/vitos73/serpstat-mcp-server-java
+- Check the project repository: https://github.com/SerpstatGlobal/serpstat-mcp-server-java
 - Contact Serpstat support for API-related questions
 - Make sure your Serpstat subscription includes API access
 
