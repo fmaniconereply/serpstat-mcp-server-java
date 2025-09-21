@@ -1,4 +1,4 @@
-# Serpstat MCP Server
+# Serpstat MCP Server SSE Protocol
 
 MCP \(Model Context Protocol\) server for integration with Serpstat API, implementing api methods for a SEO analysis.
 
