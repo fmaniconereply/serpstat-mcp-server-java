@@ -26,10 +26,12 @@ public class SerpstatMcpServer {
 
     private static final String HOST_ENV = "SERPSTAT_MCP_HOST";
     private static final String PORT_ENV = "SERPSTAT_MCP_PORT";
+    private static final String BASE_URL_ENV = "SERPSTAT_MCP_BASE_URL";
     private static final String DEFAULT_HOST = "0.0.0.0";
     private static final int DEFAULT_PORT = 8080;
     private static final String MESSAGE_ENDPOINT = "/messages";
     private static final String EVENTS_ENDPOINT = "/events";
+    private static final String RELATIVE_BASE_URL_VALUE = "relative";
 
     private final String apiToken;
     private McpSyncServer mcpServer;
@@ -70,7 +72,8 @@ public class SerpstatMcpServer {
     public void start() throws Exception {
         String host = resolveHost();
         int port = resolvePort();
-        String baseUrl = String.format("http://%s:%d", host, port);
+        String defaultBaseUrl = String.format("http://%s:%d", host, port);
+        String baseUrl = resolveBaseUrl(defaultBaseUrl);
 
         var transportProvider = HttpServletSseServerTransportProvider.builder()
                 .objectMapper(new ObjectMapper())
@@ -109,8 +112,11 @@ public class SerpstatMcpServer {
         System.err.printf("📊 Registered %d tools across %d domains%n",
                 toolRegistry.getToolCount(), toolRegistry.getDomainCount());
         System.err.printf("⚙️  Configuration -> host: %s (env %s), port: %d (env %s)%n", host, HOST_ENV, port, PORT_ENV);
-        System.err.printf("🌐 SSE transport available at %s%s with message endpoint %s%s%n",
-                baseUrl, EVENTS_ENDPOINT, baseUrl, MESSAGE_ENDPOINT);
+        System.err.printf("🌐 SSE transport available at %s%s%n", defaultBaseUrl, EVENTS_ENDPOINT);
+        String advertisedMessageEndpoint = baseUrl.isEmpty()
+                ? MESSAGE_ENDPOINT
+                : baseUrl + MESSAGE_ENDPOINT;
+        System.err.printf("📨 Message endpoint advertised as %s%n", advertisedMessageEndpoint);
         System.err.println("⏳ Waiting for MCP client connections over SSE...");
 
         // Graceful shutdown
@@ -174,5 +180,30 @@ public class SerpstatMcpServer {
             System.err.printf("⚠️  Invalid port '%s' in %s. Falling back to default %d.%n", envPort, PORT_ENV, DEFAULT_PORT);
             return DEFAULT_PORT;
         }
+    }
+
+    private String resolveBaseUrl(String defaultBaseUrl) {
+        String envBaseUrl = System.getenv(BASE_URL_ENV);
+        if (envBaseUrl == null || envBaseUrl.isBlank()) {
+            return defaultBaseUrl;
+        }
+
+        String trimmed = envBaseUrl.trim();
+        if (trimmed.isEmpty()) {
+            System.err.printf("⚠️  %s is set but empty. Falling back to default %s.%n", BASE_URL_ENV, defaultBaseUrl);
+            return defaultBaseUrl;
+        }
+
+        if (RELATIVE_BASE_URL_VALUE.equalsIgnoreCase(trimmed)) {
+            System.err.printf("🔁 %s=relative → advertising message endpoint as relative path.%n", BASE_URL_ENV);
+            return "";
+        }
+
+        if (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+
+        System.err.printf("🌐 Using custom base URL from %s: %s%n", BASE_URL_ENV, trimmed);
+        return trimmed;
     }
 }
