@@ -68,6 +68,7 @@ This is alpha release v0.0.2.
 - `GET /sse` – Server-Sent Events stream used by MCP clients. Also accepts `HEAD` so you can probe the endpoint for health checks behind a load balancer or uptime monitor without initiating a long-lived stream.
 - `POST /messages` – JSON-RPC endpoint used for bidirectional MCP messaging.
 
+
 ## Integration into Claude Desktop for Linux
 
 - Click the menu icon (three lines, "burger") in the top right corner of Claude Desktop to open **Settings**.

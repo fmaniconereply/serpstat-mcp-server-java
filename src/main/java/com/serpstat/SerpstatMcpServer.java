@@ -274,4 +274,5 @@ public class SerpstatMcpServer {
             return false;
         }
     }
+
 }
