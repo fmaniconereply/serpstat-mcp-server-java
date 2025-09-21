@@ -47,13 +47,22 @@ This is alpha release v0.0.2.
    
 6. **Check console and open given url in browser**
 
-   ```bash 
+   ```bash
    user@pc:~/repo/serpstat-mcp-server-java$ ./inspect.sh
    Starting MCP inspector...
    ⚙️ Proxy server listening on port 6277
    🔍 MCP Inspector is up and running at http://127.0.0.1:6274 🚀
    ```
-   
+
+## Configuration
+
+### Environment variables
+
+- `SERPSTAT_API_TOKEN` – **required**. Authentication token for Serpstat API requests.
+- `SERPSTAT_MCP_HOST` – optional. Overrides the Jetty bind host (default `0.0.0.0`).
+- `SERPSTAT_MCP_PORT` – optional. Overrides the Jetty bind port (default `8080`).
+- `SERPSTAT_MCP_BASE_URL` – optional. Overrides the URL announced to MCP clients for the `/messages` endpoint. Set it to `relative` to emit only `/messages?...` so reverse proxies can rewrite the absolute URL, or provide a full base like `https://example.com` (trailing slash is trimmed).
+
 ## Integration into Claude Desktop for Linux
 
 - Click the menu icon (three lines, "burger") in the top right corner of Claude Desktop to open **Settings**.
