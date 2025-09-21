@@ -11,10 +11,23 @@ import io.modelcontextprotocol.spec.McpSchema.ServerCapabilities;
 import com.serpstat.core.ToolRegistry;
 import com.serpstat.core.SerpstatApiClient;
 
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -30,7 +43,7 @@ public class SerpstatMcpServer {
     private static final String DEFAULT_HOST = "0.0.0.0";
     private static final int DEFAULT_PORT = 8080;
     private static final String MESSAGE_ENDPOINT = "/messages";
-    private static final String EVENTS_ENDPOINT = "/events";
+    private static final String EVENTS_ENDPOINT = "/sse";
     private static final String RELATIVE_BASE_URL_VALUE = "relative";
 
     private final String apiToken;
@@ -85,6 +98,9 @@ public class SerpstatMcpServer {
         this.server = new Server(new InetSocketAddress(host, port));
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
         context.setContextPath("/");
+        context.addFilter(new FilterHolder(new HeadSsePingFilter(EVENTS_ENDPOINT)),
+                EVENTS_ENDPOINT,
+                EnumSet.of(DispatcherType.REQUEST));
         context.addServlet(new ServletHolder(transportProvider), "/*");
         this.server.setHandler(context);
 
@@ -206,4 +222,57 @@ public class SerpstatMcpServer {
         System.err.printf("🌐 Using custom base URL from %s: %s%n", BASE_URL_ENV, trimmed);
         return trimmed;
     }
+
+    private static final class HeadSsePingFilter implements Filter {
+        private final String sseEndpoint;
+
+        private HeadSsePingFilter(String sseEndpoint) {
+            this.sseEndpoint = sseEndpoint;
+        }
+
+        @Override
+        public void init(FilterConfig filterConfig) throws ServletException {
+            // No initialization required.
+        }
+
+        @Override
+        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+                throws IOException, ServletException {
+            if (request instanceof HttpServletRequest httpRequest
+                    && response instanceof HttpServletResponse httpResponse
+                    && "HEAD".equalsIgnoreCase(httpRequest.getMethod())
+                    && matchesEndpoint(httpRequest)) {
+                httpResponse.setStatus(HttpServletResponse.SC_OK);
+                httpResponse.setContentType("text/event-stream");
+                httpResponse.setHeader("Cache-Control", "no-cache");
+                httpResponse.setContentLength(0);
+                return;
+            }
+
+            chain.doFilter(request, response);
+        }
+
+        @Override
+        public void destroy() {
+            // No cleanup required.
+        }
+
+        private boolean matchesEndpoint(HttpServletRequest request) {
+            String requestUri = request.getRequestURI();
+            if (requestUri == null) {
+                return false;
+            }
+
+            if (requestUri.equals(sseEndpoint)) {
+                return true;
+            }
+
+            if (!sseEndpoint.endsWith("/") && requestUri.equals(sseEndpoint + "/")) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
 }

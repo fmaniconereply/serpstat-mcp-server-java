@@ -63,6 +63,12 @@ This is alpha release v0.0.2.
 - `SERPSTAT_MCP_PORT` – optional. Overrides the Jetty bind port (default `8080`).
 - `SERPSTAT_MCP_BASE_URL` – optional. Overrides the URL announced to MCP clients for the `/messages` endpoint. Set it to `relative` to emit only `/messages?...` so reverse proxies can rewrite the absolute URL, or provide a full base like `https://example.com` (trailing slash is trimmed).
 
+### HTTP endpoints
+
+- `GET /sse` – Server-Sent Events stream used by MCP clients. Also accepts `HEAD` so you can probe the endpoint for health checks behind a load balancer or uptime monitor without initiating a long-lived stream.
+- `POST /messages` – JSON-RPC endpoint used for bidirectional MCP messaging.
+
+
 ## Integration into Claude Desktop for Linux
 
 - Click the menu icon (three lines, "burger") in the top right corner of Claude Desktop to open **Settings**.
